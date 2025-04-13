@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import theme from './theme';
 import SignIn from './components/SignInSide';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -10,5 +9,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <CssBaseline />
       <SignIn />
     </ThemeProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
