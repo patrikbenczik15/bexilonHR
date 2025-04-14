@@ -1,9 +1,12 @@
+// TODO RESPONSIVE DESIGN
+
 import NavBar from "../NavBar";
 import SignInCard from "./SignInCard";
 import SignInSideInfo from "./SignInSideInfo";
 import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../../theme/AppTheme';
+import Footer from "../Footer";
 export default function SignInSide() {
     return (
         <AppTheme >
@@ -47,6 +50,7 @@ export default function SignInSide() {
             </Stack>
           </Stack>
         </Stack>
+        <Footer />
         </AppTheme>
     );
   }

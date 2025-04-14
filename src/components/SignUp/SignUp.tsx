@@ -16,6 +16,7 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
 import NavBar from '../NavBar';
+import Footer from '../Footer';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -222,6 +223,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           </Box>
         </Card>
       </SignUpContainer>
+      <Footer />
     </AppTheme>
   );
 }
