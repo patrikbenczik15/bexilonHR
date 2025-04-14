@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../theme/AppTheme';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../SignIn/CustomIcons';
+import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
 import NavBar from '../NavBar';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -38,7 +38,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
     position: 'relative',
-    minHeight: '100vh', 
+    minHeight: '60vh',
     padding: theme.spacing(2),
     [theme.breakpoints.up('sm')]: {
       padding: theme.spacing(4),
