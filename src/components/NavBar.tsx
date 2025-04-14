@@ -35,7 +35,9 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
   return (
-    <AppBar position="static" sx ={{background:'linear-gradient(black,#0f172a)'}}>
+    <AppBar position="static" sx ={{background:'linear-gradient(black,#0f172a)', boxShadow: 'none', 
+    border: 'none', 
+    margin: 0 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />

@@ -15,7 +15,7 @@ export default function SignInSide() {
           sx={[
             {
               justifyContent: 'center',
-              height: 'calc((1 - var(--template-frame-height, 0)) * 100%)',
+              height: '100vh',
               marginTop: '0',
               minHeight: '100%',
               background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
