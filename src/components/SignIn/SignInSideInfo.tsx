@@ -8,25 +8,25 @@ import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 
 const items = [
   {
-    icon: <DocumentScannerRoundedIcon sx={{ color: '#757C88' }} />,
+    icon: <DocumentScannerRoundedIcon sx={{ color: 'text.primary' }} />,
     title: 'Automated HR Document Handling',
     description:
       'Eliminate manual effort. Let Bexilon validate, process, and route employee documents with smart automation.',
   },
   {
-    icon: <TuneRoundedIcon sx={{ color: '#757C88' }} />,
+    icon: <TuneRoundedIcon sx={{ color: 'text.primary' }} />,
     title: 'Customizable Workflows',
     description:
       'You decide what document types are allowed, required, or must contain signatures — fully adjustable by HR admins.',
   },
   {
-    icon: <CheckCircleRoundedIcon sx={{ color: '#757C88' }} />,
+    icon: <CheckCircleRoundedIcon sx={{ color: 'text.primary' }} />,
     title: 'AI-Powered Validation',
     description:
       'Each upload is scanned by our AI to detect missing data, invalid formats, or missing signatures — before it reaches HR.',
   },
   {
-    icon: <GroupsRoundedIcon sx={{ color: '#757C88' }} />,
+    icon: <GroupsRoundedIcon sx={{ color: 'text.primary' }} />,
     title: 'Smart Role-Based Access',
     description:
       'Employees, HR, and directors all see exactly what they need. Role-based views keep your operations efficient and secure.',
@@ -37,7 +37,7 @@ export default function Content() {
   return (
     <Stack sx={{ flexDirection: 'column', alignSelf: 'center', gap: 4, maxWidth: 450 }}>
       <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-        <Typography variant="h2" sx={{ color: "#F4F4F4" }}>
+        <Typography variant="h2" sx={{ color: "primary.text" }}>
           bexilon
         </Typography>
       </Box>
@@ -45,10 +45,10 @@ export default function Content() {
         <Stack key={index} direction="row" sx={{ gap: 2 }}>
           {item.icon}
           <div>
-            <Typography gutterBottom sx={{ fontWeight: 'medium', color:'#FAFAFA' }}>
+            <Typography gutterBottom sx={{ fontWeight: 'medium' }}>
               {item.title}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#757575' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {item.description}
             </Typography>
           </div>

@@ -2,10 +2,12 @@ import NavBar from "../NavBar";
 import SignInCard from "./SignInCard";
 import SignInSideInfo from "./SignInSideInfo";
 import Stack from '@mui/material/Stack';
-
+import CssBaseline from '@mui/material/CssBaseline';
+import AppTheme from '../../theme/AppTheme';
 export default function SignInSide() {
     return (
-        <>
+        <AppTheme >
+        <CssBaseline enableColorScheme/>
         <NavBar/>
         <Stack
           direction="column"
@@ -16,8 +18,10 @@ export default function SignInSide() {
               height: 'calc((1 - var(--template-frame-height, 0)) * 100%)',
               marginTop: '0',
               minHeight: '100%',
-              background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)'
-            },
+              background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
+            //     '&::-webkit-scrollbar': { display: 'none' }, '&::-moz-scrollbar': { display: 'none' }, '&::-ms-scrollbar': { display: 'none' }
+            // Test ^^^^^^^ design later.
+             },
           ]}
         >
           <Stack
@@ -43,7 +47,7 @@ export default function SignInSide() {
             </Stack>
           </Stack>
         </Stack>
-        </>
+        </AppTheme>
     );
   }
   

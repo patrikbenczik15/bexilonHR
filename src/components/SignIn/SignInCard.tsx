@@ -32,8 +32,6 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-
-// TODO Dark Themed 
 export default function SignInCard() {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
