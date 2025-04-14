@@ -1,5 +1,5 @@
 body {
-  background-color: black;
+  background: "linear-gradient(to left,rgb(16, 24, 43), #0f172a)" !important;
 }
 ::-webkit-scrollbar {
   display: none;

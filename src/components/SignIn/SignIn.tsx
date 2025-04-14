@@ -1,6 +1,6 @@
 // TODO RESPONSIVE DESIGN
 
-import NavBar from "../NavBar";
+import AppAppBar from "../Landing/AppAppBar";
 import SignInCard from "./SignInCard";
 import SignInSideInfo from "./SignInSideInfo";
 import Stack from '@mui/material/Stack';
@@ -11,7 +11,7 @@ export default function SignInSide() {
     return (
         <AppTheme >
         <CssBaseline enableColorScheme/>
-        <NavBar/>
+        <AppAppBar/>
         <Stack
           direction="column"
           component="main"
