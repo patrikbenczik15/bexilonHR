@@ -15,16 +15,17 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
-import NavBar from '../NavBar';
-
+import Footer from '../Footer';
+import AppAppBar from '../Landing/AppAppBar';
+// TODO no scroll 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'center',
   width: '100%',
   padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
+  gap: theme.spacing(3),
+  marginTop: theme.spacing(4), 
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
   [theme.breakpoints.up('sm')]: {
@@ -37,23 +38,25 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignUpContainer = styled(Stack)(({ theme }) => ({
-    position: 'relative',
-    minHeight: '60vh',
-    padding: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(4),
-    },
-    '&::before': {
-      content: '""',
-      display: 'block',
-      position: 'absolute',
-      zIndex: -1,
-      inset: 0,
-      background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
-    },
-  }));
+  position: 'relative',
+  minHeight: 'calc(100vh - 120px)', 
+  padding: theme.spacing(2),
+  paddingTop: theme.spacing(8), 
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(4),
+    paddingTop: theme.spacing(12),
+  },
+  '&::before': {
+    content: '""',
+    display: 'block',
+    position: 'absolute',
+    zIndex: -1,
+    inset: 0,
+    background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
+  },
+}));
 
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
+export default function SignUp() {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -113,9 +116,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   };
 
   return (
-    <AppTheme {...props}>
-      <NavBar/>
+    <AppTheme >
       <CssBaseline enableColorScheme />
+      <AppAppBar />
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <SitemarkIcon />
@@ -222,6 +225,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           </Box>
         </Card>
       </SignUpContainer>
+      <Footer />
     </AppTheme>
   );
 }
