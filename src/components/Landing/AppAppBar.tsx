@@ -71,9 +71,6 @@ export default function AppAppBar() {
               <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
                 FAQ
               </Button>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
-                Blog
-              </Button>
             </Box>
           </Box>
           <Box
