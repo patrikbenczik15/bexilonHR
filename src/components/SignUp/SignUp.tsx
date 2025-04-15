@@ -17,7 +17,7 @@ import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
 import Footer from '../Footer';
 import AppAppBar from '../Landing/AppAppBar';
-// TODO no scroll 
+// TODO no scroll -> card too big -> need to make it so it can be seen without scrolling down
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
