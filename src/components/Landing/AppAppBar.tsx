@@ -56,20 +56,40 @@ export default function AppAppBar() {
             <Sitemark />
           </Link>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Button variant="text" color="info" size="small">
+              <Button href="#features" variant="text" color="info" size="small" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+               sx={{ textTransform: 'none' }}>
                 Features
               </Button>
-              <Button variant="text" color="info" size="small">
+              <Button href="#testimonials" variant="text" color="info" size="small" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+               sx={{ textTransform: 'none' }}>
                 Testimonials
               </Button>
-              <Button variant="text" color="info" size="small">
+              <Button href="#highlights" variant="text" color="info" size="small" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('highlights')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+               sx={{ textTransform: 'none' }}>
                 Highlights
               </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
-              </Button>
-              <Button variant="text" color="info" size="small" sx={{ minWidth: 0 }}>
+              <Button href="#faq" variant="text" color="info" size="small" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+               sx={{ textTransform: 'none' }}>
                 FAQ
+              </Button>
+              <Button component={Link} to="/pricing" color="primary" variant="text" size="small">
+                Pricing
               </Button>
             </Box>
           </Box>
