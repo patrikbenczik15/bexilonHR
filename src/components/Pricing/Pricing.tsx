@@ -9,11 +9,13 @@ import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import AppTheme from '../../theme/AppTheme';
 import { CssBaseline } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 
 const tiers = [
@@ -60,6 +62,25 @@ const tiers = [
       buttonColor: 'primary',
     },
   ];
+  const PricingContainer = styled(Stack)(({ theme }) => ({
+    position: 'relative',
+    minHeight: 'calc(100vh - 120px)', 
+    padding: theme.spacing(2),
+    marginTop: "-5.7rem",
+    paddingTop: theme.spacing(8), 
+    [theme.breakpoints.up('sm')]: {
+      padding: theme.spacing(4),
+      paddingTop: theme.spacing(12),
+    },
+    '&::before': {
+      content: '""',
+      display: 'block',
+      position: 'absolute',
+      zIndex: -1,
+      inset: 0,
+      background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
+    },
+  }));
   
 
 export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
@@ -67,6 +88,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <AppAppBar />
+      <PricingContainer>
       <Container
       id="pricing"
       sx={{
@@ -77,6 +99,8 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
         flexDirection: 'column',
         alignItems: 'center',
         gap: { xs: 3, sm: 6 },
+  
+       
       }}
     >
       <Box
@@ -216,6 +240,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
         ))}
       </Grid>
     </Container>
+    </PricingContainer>
     <Footer />
        </AppTheme>
         );

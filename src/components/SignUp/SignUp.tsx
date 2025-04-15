@@ -15,7 +15,6 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
-import NavBar from '../NavBar';
 import Footer from '../Footer';
 import AppAppBar from '../Landing/AppAppBar';
 // TODO no scroll 
