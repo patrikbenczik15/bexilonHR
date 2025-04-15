@@ -3,6 +3,7 @@ import Landing from './components/Landing/Landing';
 import SignUp from './components/SignUp/SignUp';
 import SignIn from './components/SignIn/SignIn';
 import Pricing from './components/Pricing/Pricing';
+import NotFound from './components/NotFound/NotFound';
 
 function App() {
   return (
@@ -13,8 +14,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/pricing" element={<Pricing />} />
         
-        {/* Ruta pentru 404 - Pagină inexistentă */}
-        <Route path="*" element={<div>404 Not Found</div>} />
+        <Route path="*" element={<NotFound/>} />
       </Routes>
 
   );
