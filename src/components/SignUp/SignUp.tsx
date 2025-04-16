@@ -15,8 +15,8 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
-import Footer from '../Footer';
-import AppAppBar from '../Landing/AppAppBar';
+import Footer from '../Footer/Footer';
+import NavBar from '../NavBar/NavBar';
 // TODO no scroll -> card too big -> need to make it so it can be seen without scrolling down
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -52,11 +52,11 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
     position: 'absolute',
     zIndex: -1,
     inset: 0,
-    background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
+    background: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
   },
 }));
 
-export default function SignUp() {
+export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -116,9 +116,9 @@ export default function SignUp() {
   };
 
   return (
-    <AppTheme >
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
+      <NavBar />
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <SitemarkIcon />

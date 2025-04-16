@@ -1,5 +1,5 @@
-import AppAppBar from '../Landing/AppAppBar';
-import Footer from '../Footer';
+import NavBar from '../NavBar/NavBar';
+import Footer from '../Footer/Footer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -78,7 +78,6 @@ const tiers = [
       position: 'absolute',
       zIndex: -1,
       inset: 0,
-      background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
     },
   }));
   
@@ -87,7 +86,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
+      <NavBar />
       <PricingContainer>
       <Container
       id="pricing"

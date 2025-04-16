@@ -1,12 +1,12 @@
 // TODO RESPONSIVE DESIGN
 
-import AppAppBar from "../Landing/AppAppBar";
+import NavBar from "../NavBar/NavBar";
 import SignInCard from "./SignInCard";
 import SignInSideInfo from "./SignInSideInfo";
 import Stack from '@mui/material/Stack';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../../theme/AppTheme';
-import Footer from "../Footer";
+import Footer from "../Footer/Footer";
 import { styled } from '@mui/material/styles';
 const SignInContainer = styled(Stack)(({ theme }) => ({
   position: 'relative',
@@ -23,15 +23,15 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
     position: 'absolute',
     zIndex: -1,
     inset: 0,
-    background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
+    background: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
   },
 }));
 
-export default function SignInSide() {
+export default function SignInSide(props: { disableCustomTheme?: boolean }) {
     return (
-        <AppTheme >
+        <AppTheme {...props} >
         <CssBaseline enableColorScheme/>
-        <AppAppBar/>
+        <NavBar/>
         <SignInContainer direction="column" justifyContent="space-between">
         <Stack
           direction="column"
@@ -42,9 +42,6 @@ export default function SignInSide() {
               height: '100vh',
               marginTop: '-3.125rem',
               minHeight: '100%',
-              background: 'linear-gradient(to left,rgb(16, 24, 43), #0f172a)',
-            //     '&::-webkit-scrollbar': { display: 'none' }, '&::-moz-scrollbar': { display: 'none' }, '&::-ms-scrollbar': { display: 'none' }
-            // Test ^^^^^^^ design later.
              },
           ]}
         >

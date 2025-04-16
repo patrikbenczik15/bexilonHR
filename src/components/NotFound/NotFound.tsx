@@ -2,7 +2,7 @@ import AppTheme from '../../theme/AppTheme';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
-import AppAppBar from '../Landing/AppAppBar';
+import NavBar from '../NavBar/NavBar';
 import { CssBaseline } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';

@@ -1,33 +1,40 @@
+import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import AppTheme from '../../theme/AppTheme';
-import AppAppBar from './AppAppBar';
+import NavBar from '../NavBar/NavBar';
 import Hero from './Hero';
-import LogoCollection from './LogoCollection';
-import Highlights from './Highlights';
+import { Box } from '@mui/material';
 import Features from './Features';
 import Testimonials from './Testimonials';
+import Highlights from './Highlights';
+import Pricing from './Pricing';
 import FAQ from './FAQ';
-import Footer from '../Footer';
-export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
+import Footer from '../Footer/Footer';
+
+const sections = [
+  { id: 'features', component: <Features /> },
+  { id: 'testimonials', component: <Testimonials /> },
+  { id: 'highlights', component: <Highlights /> },
+  { id: 'pricing', component: <Pricing /> },
+  { id: 'faq', component: <FAQ /> }
+];
+
+export default function Landing() {
   return (
-    <AppTheme {...props}>
+    <AppTheme>
       <CssBaseline enableColorScheme />
-      <AppAppBar />
-      <Hero />
-      <div>
-        <LogoCollection />
-        <Features />
-        <Divider />
-        <Testimonials />
-        <Divider />
-        <Highlights />
-        <Divider />
-        <Divider />
-        <FAQ />
-        <Divider />
-        <Footer />
-      </div>
+      <NavBar />
+      
+      <Box component="main">
+        <Hero />
+        {sections.map(({ id, component }) => (
+          <Box id={id} key={id} component="section">
+            {component}
+          </Box>
+        ))}
+      </Box>
+      
+      <Footer />
     </AppTheme>
   );
 }

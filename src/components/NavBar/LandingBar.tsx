@@ -11,9 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import Sitemark from './SitemarkIcon';
-import {Link} from 'react-router-dom';
-
+import Sitemark from '../Landing/SitemarkIcon';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -33,10 +32,33 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
+
+  const handleSitemarkClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname !== '/') {
+      navigate('/');
+    } else {
+      const hero = document.getElementById('hero');
+      if (hero) {
+        hero.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  const scrollTo = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const sections = ['features','testimonials','highlights','pricing','faq'];
 
   return (
     <AppBar
@@ -52,45 +74,32 @@ export default function AppAppBar() {
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-            <Sitemark />
-          </Link>
+            <a
+              href={location.pathname === '/' ? '#hero' : '/'}
+              onClick={handleSitemarkClick}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <Sitemark />
+            </a>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Button href="#features" variant="text" color="info" size="small" 
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-               sx={{ textTransform: 'none' }}>
-                Features
-              </Button>
-              <Button href="#testimonials" variant="text" color="info" size="small" 
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-               sx={{ textTransform: 'none' }}>
-                Testimonials
-              </Button>
-              <Button href="#highlights" variant="text" color="info" size="small" 
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('highlights')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-               sx={{ textTransform: 'none' }}>
-                Highlights
-              </Button>
-              <Button href="#faq" variant="text" color="info" size="small" 
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-               sx={{ textTransform: 'none' }}>
-                FAQ
-              </Button>
-              <Button component={Link} to="/pricing" color="primary" variant="text" size="small">
-                Pricing
-              </Button>
+              {sections.map((id) => (
+                <Button
+                  key={id}
+                  href={`#${id}`}
+                  variant="text"
+                  color="info"
+                  size="small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo(id);
+                  }}
+                  sx={{ textTransform: 'none' }}
+                >
+                  {id === 'faq'
+                    ? 'FAQ'
+                    : id.charAt(0).toUpperCase() + id.slice(1)}
+                </Button>
+              ))}
             </Box>
           </Box>
           <Box
@@ -122,23 +131,28 @@ export default function AppAppBar() {
               }}
             >
               <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                  }}
-                >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <IconButton onClick={toggleDrawer(false)}>
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
+                {sections.map((id) => (
+                  <MenuItem
+                    key={id}
+                    onClick={() => {
+                      toggleDrawer(false)();
+                      if (location.pathname !== '/') {
+                        navigate('/', { state: { scrollToId: id } });
+                      } else {
+                        scrollTo(id);
+                      }
+                    }}
+                  >
+                    {id === 'faq'
+                      ? 'FAQ'
+                      : id.charAt(0).toUpperCase() + id.slice(1)}
+                  </MenuItem>
+                ))}
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
                   <Button color="primary" variant="contained" fullWidth>
