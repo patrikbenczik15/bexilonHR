@@ -9,6 +9,8 @@ lerna-debug.log*
 
 frontend/node_modules
 frontend/dist
+backend/node_modules
+backend/dist
 dist-ssr
 *.local
 .env
