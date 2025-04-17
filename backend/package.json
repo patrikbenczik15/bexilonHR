@@ -4,19 +4,20 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "node --import ./ts-node-loader.mjs src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "serve": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts"
   },
   "author": "Benczik Roberto-Patrik",
   "license": "ISC",
-  "description": "",
+  "description": "the backend for the bexilonHR web app",
   "type": "module",
   "dependencies": {
     "mongoose": "^8.13.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^22.14.1",
     "express": "^5.1.0",
     "nodemon": "^3.1.9",

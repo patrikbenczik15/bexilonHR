@@ -1,7 +1,6 @@
 {
-    "watch": ["src"],
-    "ext": "ts",
-    "ignore": ["dist"],
-    "exec": "node --import ./ts-node-loader.mjs src/index.ts"
-  }
-  
+  "watch": ["src"],
+  "ext": "ts",
+  "ignore": ["dist"],
+  "exec": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts"
+}
