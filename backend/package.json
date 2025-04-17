@@ -3,18 +3,24 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon",
+    "start": "node --import ./ts-node-loader.mjs src/index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js"
   },
-  "author": "",
+  "author": "Benczik Roberto-Patrik",
   "license": "ISC",
   "description": "",
   "type": "module",
   "dependencies": {
-    "express": "^5.1.0"
+    "mongoose": "^8.13.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

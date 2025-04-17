@@ -1,0 +1,7 @@
+{
+    "watch": ["src"],
+    "ext": "ts",
+    "ignore": ["dist"],
+    "exec": "node --import ./ts-node-loader.mjs src/index.ts"
+  }
+  
