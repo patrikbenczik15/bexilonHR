@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import bcrypt from "bcrypt";
 
 export enum UserRole {
   Employee = "employee",
@@ -15,25 +16,31 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   setPermissions: () => void;
+  comparePassword: (candidatePassword: string) => Promise<boolean>;
 }
 
 const UserSchema: Schema<IUser> = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
       trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
+      validate: {
+        validator: (v: string) => /\S+@\S+\.\S+/.test(v),
+        message: props => `${props.value} is not a valid email address!`,
+      },
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters long"],
     },
     role: {
       type: String,
@@ -51,7 +58,6 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
     timestamps: true,
   }
 );
-
 UserSchema.methods.setPermissions = function () {
   const permissions: Record<string, boolean> = {};
 
@@ -84,8 +90,32 @@ UserSchema.methods.setPermissions = function () {
   this.permissions = permissions;
 };
 
-UserSchema.pre("save", function (next) {
-  this.setPermissions();
+// Compare passwords function
+// UserSchema.methods.comparePassword = async function (
+//   candidatePassword: string
+// ): Promise<boolean> {
+//   try {
+//     return await bcrypt.compare(candidatePassword, this.password);
+//   } catch (error) {
+//     return false;
+//   }
+// };
+
+// ! hash password before saving
+UserSchema.pre("save", async function (next) {
+  if (!this.permissions || Object.keys(this.permissions).length === 0) {
+    this.setPermissions();
+  }
+
+  // ! only hash password if its new or changed existing one
+  if (this.isModified("password")) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (error) {
+      return next(error as Error);
+    }
+  }
   next();
 });
 
