@@ -190,5 +190,8 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
+UserSchema.methods.getCreatedDocumentRequests = async function () {
+  return mongoose.model("DocumentRequest").find({ requesterId: this._id });
+};
 const UserModel: Model<IUser> = mongoose.model<IUser>("User", UserSchema);
 export default UserModel;

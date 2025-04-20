@@ -65,7 +65,6 @@ export const connectDB = async () => {
     if (!adminUser || !johnWayne) {
       throw new Error("Admin user or John Wayne not found");
     }
-    // 1. Crearea tipului de document pentru buletin
     let buletinType = await DocumentType.findOne({ name: "Buletin" });
     if (!buletinType) {
       buletinType = new DocumentType({
@@ -83,14 +82,13 @@ export const connectDB = async () => {
       console.log("Buletin document type already exists");
     }
 
-    // 2. Crearea tipului de document pentru concediu
     let concediuType = await DocumentType.findOne({ name: "Cerere Concediu" });
     if (!concediuType) {
       concediuType = new DocumentType({
         name: "Cerere Concediu",
         description: "Cerere pentru concediu de odihnă",
         allowedUploads: ["pdf", "doc", "docx"],
-        requiredDocuments: [buletinType._id], // Necesită buletin
+        requiredDocuments: [buletinType._id],
         requiresHRApproval: true,
         createdBy: adminUser._id,
         isActive: true,
@@ -101,14 +99,12 @@ export const connectDB = async () => {
       console.log("Cerere Concediu document type already exists");
     }
 
-    // 3. Verificăm dacă John Wayne a încărcat deja un buletin
     let buletinDocument = await Document.findOne({
       userId: johnWayne._id,
       documentType: buletinType._id,
     });
 
     if (!buletinDocument) {
-      // Simulăm un fișier PDF pentru buletin
       const dummyPdfBuffer = Buffer.from("%PDF-1.5 dummy content for testing");
 
       buletinDocument = new Document({
@@ -141,7 +137,7 @@ export const connectDB = async () => {
       await buletinDocument.save();
       console.log("Buletin document created for John Wayne");
 
-      // Actualizăm lista de documente a lui John Wayne
+      // ! update john wayne doc list
       await User.findByIdAndUpdate(johnWayne._id, {
         $push: { documents: buletinDocument._id },
       });
@@ -149,7 +145,6 @@ export const connectDB = async () => {
       console.log("Buletin document already exists for John Wayne");
     }
 
-    // 4. Creăm cererea de concediu pentru John Wayne
     let concediuRequest = await DocumentRequest.findOne({
       requesterId: johnWayne._id,
       documentType: concediuType._id,
@@ -163,33 +158,26 @@ export const connectDB = async () => {
         requesterId: johnWayne._id,
         documentType: concediuType._id,
         requiredDocuments: [buletinType._id],
-        submittedDocuments: [buletinDocument._id], // Includem buletinul deja încărcat
+        submittedDocuments: [buletinDocument._id],
         status: RequestStatus.Pending,
       });
 
       await concediuRequest.save();
       console.log("Cerere concediu created for John Wayne");
 
-      // // Actualizăm listele de cereri
-      // await User.findByIdAndUpdate(johnWayne._id, {
-      //   $push: { documentRequests: concediuRequest._id },
-      // });
-
-      // await User.findByIdAndUpdate(hrUser._id, {
-      //   $push: { assignedRequests: concediuRequest._id },
-      // });
+      await User.findByIdAndUpdate(johnWayne._id, {
+        $push: { documentRequests: concediuRequest._id },
+      });
     } else {
       console.log("Cerere concediu already exists for John Wayne");
     }
 
-    // 5. Încărcăm documentul pentru cererea de concediu
     let concediuDocument = await Document.findOne({
       userId: johnWayne._id,
       documentType: concediuType._id,
     });
 
     if (!concediuDocument) {
-      // Simulăm un fișier PDF pentru cererea de concediu
       const dummyConcediuBuffer = Buffer.from(
         "%PDF-1.5 Cerere concediu John Wayne pentru perioada 15-25 August 2025"
       );
@@ -206,8 +194,8 @@ export const connectDB = async () => {
           size: dummyConcediuBuffer.length,
           originalName: "cerere_concediu_john_wayne.pdf",
         },
-        status: DocumentStatus.Pending, // În așteptare
-        requiredDocuments: [buletinDocument._id], // Legătura cu buletinul
+        status: DocumentStatus.Pending,
+        requiredDocuments: [buletinDocument._id],
         approvalHistory: [
           {
             role: UserRole.Employee,
@@ -221,12 +209,12 @@ export const connectDB = async () => {
       await concediuDocument.save();
       console.log("Cerere concediu document created for John Wayne");
 
-      // Actualizăm lista de documente a lui John Wayne
+      // ! update john wayne doc list
       await User.findByIdAndUpdate(johnWayne._id, {
         $push: { documents: concediuDocument._id },
       });
 
-      // Actualizăm cererea de concediu cu documentul încărcat
+      // ! update doc request
       await DocumentRequest.findByIdAndUpdate(concediuRequest._id, {
         $push: { submittedDocuments: concediuDocument._id },
       });
