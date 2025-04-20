@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import User from "../models/User.js";
+import DocumentRequest from "../models/DocumentRequest.js";
 import DocumentType from "../models/DocumentType.js";
 import Document from "../models/Document.js";
-import { DocumentStatus } from "../utils/enums.js";
+import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.js";
 import "../models/index.js";
 
 dotenv.config();
@@ -64,53 +65,174 @@ export const connectDB = async () => {
     if (!adminUser || !johnWayne) {
       throw new Error("Admin user or John Wayne not found");
     }
-
-    // ! document type for passport
-    let passportType = await DocumentType.findOne({ name: "Passport" });
-    if (!passportType) {
-      passportType = new DocumentType({
-        name: "Passport",
-        description: "Your passport document",
-        allowedUploads: ["pdf", "jpg", "png"],
-        requiredDocuments: [], // * VA FI DOCUMENTTYPE TYPE// TODO schimbat, avem nevoie de un obiect cu id-uri pentru ca unele documente necesita alte documente "basic" gen buletin.
-        // TODO FIECARE DOCUMENT SINGULAR NU ARE NEVOIE DE REQUIRED DOCUMENTS, FIECARE REQUEST ARE
+    // 1. Crearea tipului de document pentru buletin
+    let buletinType = await DocumentType.findOne({ name: "Buletin" });
+    if (!buletinType) {
+      buletinType = new DocumentType({
+        name: "Buletin",
+        description: "Document de identitate oficial",
+        allowedUploads: ["pdf", "jpg", "jpeg", "png"],
+        requiredDocuments: [],
         requiresHRApproval: false,
         createdBy: adminUser._id,
         isActive: true,
       });
-      await passportType.save();
-      console.log("Passport DocumentType created successfully");
+      await buletinType.save();
+      console.log("Buletin document type created successfully");
     } else {
-      console.log("Passport DocumentType already exists");
+      console.log("Buletin document type already exists");
     }
 
-    // ! john wayne passport for test
-    const existingPassport = await Document.findOne({
-      userId: johnWayne._id,
-      documentType: passportType._id,
-    });
-    if (!existingPassport) {
-      const passportDocument = new Document({
-        name: "John Wayne's Passport",
-        description: "Passport document for John Wayne",
-        userId: johnWayne._id,
-        documentType: passportType._id,
-        file: {
-          data: Buffer.from("dummy passport data"),
-          contentType: "application/pdf",
-          size: 1024,
-          originalName: "passport.pdf",
-        },
-        status: DocumentStatus.Pending,
-        feedback: "",
-        requiredDocuments: [],
+    // 2. Crearea tipului de document pentru concediu
+    let concediuType = await DocumentType.findOne({ name: "Cerere Concediu" });
+    if (!concediuType) {
+      concediuType = new DocumentType({
+        name: "Cerere Concediu",
+        description: "Cerere pentru concediu de odihnă",
+        allowedUploads: ["pdf", "doc", "docx"],
+        requiredDocuments: [buletinType._id], // Necesită buletin
+        requiresHRApproval: true,
+        createdBy: adminUser._id,
+        isActive: true,
       });
-      await passportDocument.save();
-      console.log("Passport Document created successfully");
+      await concediuType.save();
+      console.log("Cerere Concediu document type created successfully");
     } else {
-      console.log("Passport Document for John Wayne already exists");
+      console.log("Cerere Concediu document type already exists");
     }
 
+    // 3. Verificăm dacă John Wayne a încărcat deja un buletin
+    let buletinDocument = await Document.findOne({
+      userId: johnWayne._id,
+      documentType: buletinType._id,
+    });
+
+    if (!buletinDocument) {
+      // Simulăm un fișier PDF pentru buletin
+      const dummyPdfBuffer = Buffer.from("%PDF-1.5 dummy content for testing");
+
+      buletinDocument = new Document({
+        name: "Buletin John Wayne",
+        userId: johnWayne._id,
+        documentType: buletinType._id,
+        file: {
+          data: dummyPdfBuffer,
+          contentType: "application/pdf",
+          size: dummyPdfBuffer.length,
+          originalName: "buletin_john_wayne.pdf",
+        },
+        status: DocumentStatus.Valid, // Validat deja
+        approvalHistory: [
+          {
+            role: UserRole.Employee,
+            action: "upload",
+            comment: "Încărcare inițială",
+            date: new Date(),
+          },
+          {
+            role: UserRole.Employee,
+            action: "approve",
+            comment: "Document valid",
+            date: new Date(),
+          },
+        ],
+      });
+
+      await buletinDocument.save();
+      console.log("Buletin document created for John Wayne");
+
+      // Actualizăm lista de documente a lui John Wayne
+      await User.findByIdAndUpdate(johnWayne._id, {
+        $push: { documents: buletinDocument._id },
+      });
+    } else {
+      console.log("Buletin document already exists for John Wayne");
+    }
+
+    // 4. Creăm cererea de concediu pentru John Wayne
+    let concediuRequest = await DocumentRequest.findOne({
+      requesterId: johnWayne._id,
+      documentType: concediuType._id,
+    });
+
+    if (!concediuRequest) {
+      concediuRequest = new DocumentRequest({
+        title: "Cerere concediu vară 2025",
+        description:
+          "Solicit 10 zile de concediu în perioada 15-25 August 2025",
+        requesterId: johnWayne._id,
+        documentType: concediuType._id,
+        requiredDocuments: [buletinType._id],
+        submittedDocuments: [buletinDocument._id], // Includem buletinul deja încărcat
+        status: RequestStatus.Pending,
+      });
+
+      await concediuRequest.save();
+      console.log("Cerere concediu created for John Wayne");
+
+      // // Actualizăm listele de cereri
+      // await User.findByIdAndUpdate(johnWayne._id, {
+      //   $push: { documentRequests: concediuRequest._id },
+      // });
+
+      // await User.findByIdAndUpdate(hrUser._id, {
+      //   $push: { assignedRequests: concediuRequest._id },
+      // });
+    } else {
+      console.log("Cerere concediu already exists for John Wayne");
+    }
+
+    // 5. Încărcăm documentul pentru cererea de concediu
+    let concediuDocument = await Document.findOne({
+      userId: johnWayne._id,
+      documentType: concediuType._id,
+    });
+
+    if (!concediuDocument) {
+      // Simulăm un fișier PDF pentru cererea de concediu
+      const dummyConcediuBuffer = Buffer.from(
+        "%PDF-1.5 Cerere concediu John Wayne pentru perioada 15-25 August 2025"
+      );
+
+      concediuDocument = new Document({
+        name: "Cerere concediu vară 2025",
+        description:
+          "Solicit 10 zile de concediu în perioada 15-25 August 2025",
+        userId: johnWayne._id,
+        documentType: concediuType._id,
+        file: {
+          data: dummyConcediuBuffer,
+          contentType: "application/pdf",
+          size: dummyConcediuBuffer.length,
+          originalName: "cerere_concediu_john_wayne.pdf",
+        },
+        status: DocumentStatus.Pending, // În așteptare
+        requiredDocuments: [buletinDocument._id], // Legătura cu buletinul
+        approvalHistory: [
+          {
+            role: UserRole.Employee,
+            action: "upload",
+            comment: "Încărcare cerere concediu",
+            date: new Date(),
+          },
+        ],
+      });
+
+      await concediuDocument.save();
+      console.log("Cerere concediu document created for John Wayne");
+
+      // Actualizăm lista de documente a lui John Wayne
+      await User.findByIdAndUpdate(johnWayne._id, {
+        $push: { documents: concediuDocument._id },
+      });
+
+      // Actualizăm cererea de concediu cu documentul încărcat
+      await DocumentRequest.findByIdAndUpdate(concediuRequest._id, {
+        $push: { submittedDocuments: concediuDocument._id },
+      });
+    } else {
+      console.log("Cerere concediu document already exists for John Wayne");
+    }
     console.log("All test data created successfully");
   } catch (error) {
     console.error("Error connecting to MongoDB or creating test data:", error);

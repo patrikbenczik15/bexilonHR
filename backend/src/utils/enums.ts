@@ -13,5 +13,13 @@ export enum DocumentStatus {
   RevisionRequired = "revisionRequired",
 }
 
+export enum RequestStatus {
+  Pending = "pending",
+  Approved = "approved",
+  Rejected = "rejected",
+  Completed = "completed",
+}
+
 export const UserRoleValues = Object.values(UserRole);
 export const DocumentStatusValues = Object.values(DocumentStatus);
+export const RequestStatusValues = Object.values(RequestStatus);

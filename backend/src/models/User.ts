@@ -10,6 +10,8 @@ export interface IUser extends Document {
   permissions: Record<string, boolean>;
   documents: mongoose.Types.ObjectId[];
   assignedDocuments: mongoose.Types.ObjectId[];
+  documentRequests: mongoose.Types.ObjectId[];
+  assignedRequests: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
   setPermissions: () => void;
@@ -63,6 +65,20 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
       {
         type: Schema.Types.ObjectId,
         ref: "Document",
+        default: [],
+      },
+    ],
+    documentRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "DocumentRequest",
+        default: [],
+      },
+    ],
+    assignedRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "DocumentRequest",
         default: [],
       },
     ],
