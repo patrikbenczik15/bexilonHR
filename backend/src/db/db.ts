@@ -72,7 +72,8 @@ export const connectDB = async () => {
         name: "Passport",
         description: "Your passport document",
         allowedUploads: ["pdf", "jpg", "png"],
-        requiredDocuments: ["buletin", "pasaport", "card de fidelitate"], // TODO schimbat, avem nevoie de un obiect cu id-uri pentru ca unele documente necesita alte documente "basic" gen buletin.
+        requiredDocuments: [], // * VA FI DOCUMENTTYPE TYPE// TODO schimbat, avem nevoie de un obiect cu id-uri pentru ca unele documente necesita alte documente "basic" gen buletin.
+        // TODO FIECARE DOCUMENT SINGULAR NU ARE NEVOIE DE REQUIRED DOCUMENTS, FIECARE REQUEST ARE
         requiresHRApproval: false,
         createdBy: adminUser._id,
         isActive: true,
