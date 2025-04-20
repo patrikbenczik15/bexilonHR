@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-
+// TODO modificat sa dea approve la DocumentRequest
 export interface IApproval extends Document {
   document: mongoose.Types.ObjectId;
   approvedBy: mongoose.Types.ObjectId;

@@ -1,38 +1,10 @@
 import express from "express";
-import mongoose from "mongoose";
-import User from "./models/User.js";
+import connectDB from "./db/db.js";
 import dotenv from "dotenv";
 dotenv.config();
-
-const dbURI = process.env.MONGODB_URI || "";
+// TODO how are images stored in db?
 const app = express();
 app.use(express.json());
-
-mongoose
-  .connect(dbURI)
-  .then(async () => {
-    console.log("Connected to MongoDB");
-
-    const existingUser = await User.findOne({
-      email: "john.wayne@bexilon.com",
-    });
-
-    if (!existingUser) {
-      const user = new User({
-        name: "John Wayne",
-        email: "john.wayne@bexilon.com",
-        password: "parolaputernica", // * hashed by pre-save hook
-      });
-
-      await user.save();
-      console.log("Test user created successfully");
-    } else {
-      console.log("Test user already exists");
-    }
-  })
-  .catch(error => {
-    console.error("Error connecting to MongoDB:", error);
-  });
 
 app.get("/", (req, res) => {
   res.send("Hello from bexilonHR backend");
@@ -75,6 +47,8 @@ app.get("/", (req, res) => {
 //   }
 // });
 
-app.listen(3000, () => {
-  console.log("Server open on port 3000");
+connectDB().then(() => {
+  app.listen(3000, () => {
+    console.log("Server open on port 3000");
+  });
 });
