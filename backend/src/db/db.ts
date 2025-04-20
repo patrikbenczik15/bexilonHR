@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import User from "../models/User.js";
-import DocumentRequest from "../models/DocumentRequest.js";
-import DocumentType from "../models/DocumentType.js";
-import Document from "../models/Document.js";
-import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.js";
-import "../models/index.js";
+import User from "../models/User.ts";
+import DocumentRequest from "../models/DocumentRequest.ts";
+import DocumentType from "../models/DocumentType.ts";
+import Document from "../models/Document.ts";
+import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.ts";
+import "../models/index.ts";
 
 dotenv.config();
 const dbURI = process.env.MONGODB_URI || "";

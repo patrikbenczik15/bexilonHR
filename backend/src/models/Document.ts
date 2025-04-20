@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { UserRole } from "../utils/enums.js";
+import { UserRole } from "../utils/enums.ts";
 
 // ! Document refers to all the files uploaded as per DocumentType rules(what files are needed and so on)
 export enum DocumentStatus {

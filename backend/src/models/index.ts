@@ -1,6 +1,6 @@
-import DocumentTypeModel from "./DocumentType.js";
-import DocumentModel from "./Document.js";
-import UserModel from "./User.js";
-import DocumentRequestModel from "./DocumentRequest.js";
+import DocumentTypeModel from "./DocumentType.ts";
+import DocumentModel from "./Document.ts";
+import UserModel from "./User.ts";
+import DocumentRequestModel from "./DocumentRequest.ts";
 
 export { DocumentTypeModel, DocumentModel, UserModel, DocumentRequestModel };

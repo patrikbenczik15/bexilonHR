@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { RequestStatus } from "../utils/enums.js";
+import { RequestStatus } from "../utils/enums.ts";
 
 export interface IDocumentRequest extends Document {
   title: string;

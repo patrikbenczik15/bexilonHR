@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
-import { DocumentStatus, UserRole } from "../utils/enums.js";
+import { DocumentStatus, UserRole } from "../utils/enums.ts";
 
 export interface IUser extends Document {
   name: string;
