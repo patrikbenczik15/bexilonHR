@@ -1,13 +1,22 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
-import { DocumentStatus, UserRole } from "../utils/enums.ts";
+import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.ts";
+
+interface Permissions {
+  canUploadDocument: boolean;
+  canSignDocument: boolean;
+  canApproveDocument: boolean;
+  canSendDocument: boolean;
+  canViewAllDocuments: boolean;
+  canManageDocumentTypes: boolean;
+}
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   role: UserRole;
-  permissions: Record<string, boolean>;
+  permissions: Permissions;
   documents: mongoose.Types.ObjectId[];
   assignedDocuments: mongoose.Types.ObjectId[];
   documentRequests: mongoose.Types.ObjectId[];
@@ -17,6 +26,40 @@ export interface IUser extends Document {
   setPermissions: () => void;
   comparePassword: (candidatePassword: string) => Promise<boolean>;
   getAccessibleDocuments: () => Promise<any>;
+  getDocumentRequests: () => Promise<any>;
+}
+
+function getPermissionsForRole(role: UserRole): Permissions {
+  const permissions: Permissions = {
+    canUploadDocument: false,
+    canSignDocument: false,
+    canApproveDocument: false,
+    canSendDocument: false,
+    canViewAllDocuments: false,
+    canManageDocumentTypes: false,
+  };
+
+  switch (role) {
+    case UserRole.Admin:
+      permissions.canUploadDocument = true;
+      permissions.canSignDocument = true;
+      permissions.canApproveDocument = true;
+      permissions.canSendDocument = true;
+      permissions.canViewAllDocuments = true;
+      permissions.canManageDocumentTypes = true;
+      break;
+    case UserRole.HR:
+      permissions.canSendDocument = true;
+      permissions.canViewAllDocuments = true;
+      break;
+    case UserRole.Employee:
+      permissions.canUploadDocument = true;
+      break;
+    default:
+      break;
+  }
+
+  return permissions;
 }
 
 const UserSchema: Schema<IUser> = new Schema<IUser>(
@@ -50,8 +93,7 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
       index: true,
     },
     permissions: {
-      type: Object,
-      of: Boolean,
+      type: Schema.Types.Mixed,
       default: {},
     },
     documents: [
@@ -87,41 +129,22 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
     timestamps: true,
   }
 );
-
 UserSchema.methods.setPermissions = function () {
-  const permissions: Record<string, boolean> = {};
-
-  switch (this.role) {
-    case UserRole.Admin:
-      permissions["canUploadDocument"] = true;
-      permissions["canSignDocument"] = true;
-      permissions["canApproveDocument"] = true;
-      permissions["canSendDocument"] = true;
-      permissions["canViewAllDocuments"] = true;
-      permissions["canManageDocumentTypes"] = true;
-      break;
-    case UserRole.HR:
-      permissions["canUploadDocument"] = false;
-      permissions["canSignDocument"] = false;
-      permissions["canApproveDocument"] = false;
-      permissions["canSendDocument"] = true;
-      permissions["canViewAllDocuments"] = true;
-      permissions["canManageDocumentTypes"] = false;
-      break;
-    case UserRole.Employee:
-      permissions["canUploadDocument"] = true;
-      permissions["canSignDocument"] = false;
-      permissions["canApproveDocument"] = false;
-      permissions["canSendDocument"] = false;
-      permissions["canViewAllDocuments"] = false;
-      permissions["canManageDocumentTypes"] = false;
-      break;
-    default:
-      break;
-  }
-
-  this.permissions = permissions;
+  this.permissions = getPermissionsForRole(this.role);
 };
+
+UserSchema.pre("save", function (next) {
+  this.setPermissions();
+  next();
+});
+
+UserSchema.pre("findOneAndUpdate", function () {
+  const update = this.getUpdate();
+  if (update && !Array.isArray(update) && "role" in update) {
+    const permissions = getPermissionsForRole(update.role as UserRole);
+    this.setUpdate({ ...update, permissions });
+  }
+});
 UserSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
@@ -149,6 +172,53 @@ UserSchema.methods.getAccessibleDocuments = async function () {
         .model("Document")
         .find({ userId: this._id })
         .populate("documentType");
+    default:
+      return [];
+  }
+};
+
+UserSchema.methods.getDocumentRequests = async function () {
+  const DocumentRequest = mongoose.model("DocumentRequest");
+
+  switch (this.role) {
+    case UserRole.Admin:
+      return DocumentRequest.find()
+        .populate("documentType requesterId assignedTo")
+        .populate({
+          path: "submittedDocuments",
+          populate: [
+            { path: "documentType", select: "name" },
+            { path: "userId", select: "name email" },
+          ],
+        });
+
+    case UserRole.HR:
+      const hrManagedTypes = await getHRManagedTypes();
+      return DocumentRequest.find({
+        documentType: { $in: hrManagedTypes },
+        status: RequestStatus.Pending,
+      })
+        .populate("documentType requesterId")
+        .populate({
+          path: "submittedDocuments",
+          populate: [{ path: "documentType", select: "name" }],
+        });
+
+    case UserRole.Employee:
+      return DocumentRequest.find({
+        $or: [{ requesterId: this._id }, { assignedTo: this._id }],
+      })
+        .populate("documentType", "name")
+        .populate("requesterId", "name email")
+        .populate("assignedTo", "name email")
+        .populate({
+          path: "submittedDocuments",
+          populate: [
+            { path: "documentType", select: "name" },
+            { path: "userId", select: "name email" },
+          ],
+        });
+
     default:
       return [];
   }

@@ -6,6 +6,7 @@ import {
   updateUser,
   deleteUser,
   getUserDocuments,
+  getUserDocumentRequests,
 } from "../controllers/UserController.ts";
 
 const router = express.Router();
@@ -17,5 +18,5 @@ router.post("/", createUser);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 router.get("/:id/documents", getUserDocuments);
-
+router.get("/:id/documentRequests", getUserDocumentRequests);
 export default router;

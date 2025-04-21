@@ -9,7 +9,7 @@ export const getAllUsers = async (
     const users = await UserModel.find();
     res.json(users);
   } catch {
-    res.status(500).json({ error: "Eroare la obținerea utilizatorilor" });
+    res.status(500).json({ error: "Error getting users" });
   }
 };
 export const getUserById = async (
@@ -19,12 +19,12 @@ export const getUserById = async (
   try {
     const user = await UserModel.findById(req.params.id);
     if (!user) {
-      res.status(404).json({ error: "Utilizatorul nu există" });
+      res.status(404).json({ error: "User not found" });
       return;
     }
     res.json(user);
   } catch {
-    res.status(500).json({ error: "Eroare la obținerea utilizatorului" });
+    res.status(500).json({ error: "Error getting user" });
   }
 };
 
@@ -37,7 +37,7 @@ export const createUser = async (
     await user.save();
     res.status(201).json(user);
   } catch {
-    res.status(400).json({ error: "Eroare la crearea utilizatorului" });
+    res.status(400).json({ error: "Error creating user" });
   }
 };
 
@@ -51,12 +51,12 @@ export const updateUser = async (
       runValidators: true,
     });
     if (!user) {
-      res.status(404).json({ error: "Utilizatorul nu există" });
+      res.status(404).json({ error: "User not found" });
       return;
     }
     res.json(user);
   } catch {
-    res.status(400).json({ error: "Eroare la actualizare" });
+    res.status(400).json({ error: "Error updating" });
   }
 };
 
@@ -67,12 +67,12 @@ export const deleteUser = async (
   try {
     const user = await UserModel.findByIdAndDelete(req.params.id);
     if (!user) {
-      res.status(404).json({ error: "Utilizatorul nu există" });
+      res.status(404).json({ error: "User not found" });
       return;
     }
-    res.json({ message: "Utilizator șters" });
+    res.json({ message: "User deleted" });
   } catch {
-    res.status(500).json({ error: "Eroare la ștergere" });
+    res.status(500).json({ error: "Error deleting user" });
   }
 };
 
@@ -83,13 +83,31 @@ export const getUserDocuments = async (
   try {
     const user = await UserModel.findById(req.params.id);
     if (!user) {
-      res.status(404).json({ error: "Utilizatorul nu există" });
+      res.status(404).json({ error: "User not found" });
       return;
     }
 
     const docs = await user.getAccessibleDocuments();
     res.json(docs);
   } catch {
-    res.status(500).json({ error: "Eroare la obținerea documentelor" });
+    res.status(500).json({ error: "Error getting documents" });
+  }
+};
+
+export const getUserDocumentRequests = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = await UserModel.findById(req.params.id);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const docRequests = await user.getDocumentRequests();
+    res.json(docRequests);
+  } catch {
+    res.status(500).json({ error: "Error getting document requests" });
   }
 };
