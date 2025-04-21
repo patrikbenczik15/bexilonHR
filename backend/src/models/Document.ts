@@ -1,15 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { UserRole } from "../utils/enums.ts";
+import { UserRole, DocumentStatus } from "../utils/enums.ts";
 
 // ! Document refers to all the files uploaded as per DocumentType rules(what files are needed and so on)
-export enum DocumentStatus {
-  Pending = "pending",
-  Valid = "valid",
-  Invalid = "invalid",
-  ApprovedByHR = "approvedByHR",
-  SignedByAdmin = "signedByAdmin",
-  RevisionRequired = "revisionRequired",
-}
 
 export interface IDocument extends Document {
   name: string;
@@ -126,7 +118,7 @@ const DocumentSchema: Schema<IDocument> = new Schema<IDocument>(
     toJSON: {
       virtuals: true,
       transform: function (doc, ret) {
-        delete ret.file.data;
+        delete ret.file.data; // * delete binary data(NOT deleting from DB the file itself, just not sending bin.data to api)
         return ret;
       },
     },

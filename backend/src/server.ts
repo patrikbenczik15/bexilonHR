@@ -2,6 +2,7 @@ import express from "express";
 import connectDB from "./db/db.js";
 import dotenv from "dotenv";
 import userRoutes from "./routes/UserRoute.js";
+
 dotenv.config();
 // TODO how are images stored in db?
 const app = express();

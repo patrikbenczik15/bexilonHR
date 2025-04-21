@@ -1,6 +1,6 @@
-import DocumentTypeModel from "./DocumentType.ts";
-import DocumentModel from "./Document.ts";
-import UserModel from "./User.ts";
-import DocumentRequestModel from "./DocumentRequest.ts";
+import DocumentType from "./DocumentType.ts";
+import Document from "./Document.ts";
+import User from "./User.ts";
+import DocumentRequest from "./DocumentRequest.ts";
 
-export { DocumentTypeModel, DocumentModel, UserModel, DocumentRequestModel };
+export { DocumentType, Document, User, DocumentRequest };

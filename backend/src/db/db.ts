@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import User from "../models/User.ts";
-import DocumentRequest from "../models/DocumentRequest.ts";
-import DocumentType from "../models/DocumentType.ts";
-import Document from "../models/Document.ts";
+import {
+  User,
+  Document,
+  DocumentType,
+  DocumentRequest,
+} from "../models/index.ts";
 import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.ts";
-import "../models/index.ts";
 
 dotenv.config();
 const dbURI = process.env.MONGODB_URI || "";
@@ -15,7 +16,6 @@ export const connectDB = async () => {
     await mongoose.connect(dbURI);
     console.log("Connected to MongoDB");
 
-    // Crearea utilizatorului John Wayne
     let existingUser = await User.findOne({ email: "john.wayne@bexilon.com" });
     if (!existingUser) {
       const user = new User({
@@ -117,7 +117,7 @@ export const connectDB = async () => {
           size: dummyPdfBuffer.length,
           originalName: "buletin_john_wayne.pdf",
         },
-        status: DocumentStatus.Valid, // Validat deja
+        status: DocumentStatus.Valid, // * already validated
         approvalHistory: [
           {
             role: UserRole.Employee,
