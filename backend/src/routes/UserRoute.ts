@@ -11,7 +11,6 @@ import {
 
 const router = express.Router();
 
-// ! Legătura între rute și funcțiile din controller
 router.get("/", getAllUsers);
 router.get("/:id", getUserById);
 router.post("/", createUser);
