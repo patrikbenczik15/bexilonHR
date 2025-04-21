@@ -1,7 +1,7 @@
 import express from "express";
-import connectDB from "./db/db.js";
+import connectDB from "./db/db.ts";
 import dotenv from "dotenv";
-import userRoutes from "./routes/UserRoute.js";
+import { userRoutes, documentRoutes } from "./routes/index.ts";
 
 dotenv.config();
 // TODO how are images stored in db?
@@ -10,8 +10,9 @@ const app = express();
 app.use(express.json());
 
 app.use("/users", userRoutes);
+app.use("/documents", documentRoutes);
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World from bexilonHR backend!");
 });
 
 // ! test auth endpoint

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import UserModel from "../models/User.ts";
+import { User } from "../models/index.ts";
 
 export const getAllUsers = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const users = await UserModel.find();
+    const users = await User.find();
     res.json(users);
   } catch {
     res.status(500).json({ error: "Error getting users" });
@@ -17,7 +17,7 @@ export const getUserById = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await UserModel.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -33,7 +33,7 @@ export const createUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = new UserModel(req.body);
+    const user = new User(req.body);
     await user.save();
     res.status(201).json(user);
   } catch {
@@ -46,7 +46,7 @@ export const updateUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -56,7 +56,7 @@ export const updateUser = async (
     }
     res.json(user);
   } catch {
-    res.status(400).json({ error: "Error updating" });
+    res.status(400).json({ error: "Error updating user" });
   }
 };
 
@@ -65,7 +65,7 @@ export const deleteUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await UserModel.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -81,7 +81,7 @@ export const getUserDocuments = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await UserModel.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -99,7 +99,7 @@ export const getUserDocumentRequests = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await UserModel.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;

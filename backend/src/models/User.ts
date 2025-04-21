@@ -16,7 +16,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
-  permissions: Permissions;
+  permissions: Permissions; // TODO change this to Map or record in dev
   documents: mongoose.Types.ObjectId[];
   assignedDocuments: mongoose.Types.ObjectId[];
   documentRequests: mongoose.Types.ObjectId[];
