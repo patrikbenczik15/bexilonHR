@@ -1,12 +1,12 @@
 {
   "name": "new-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "build": "tsc",
-    "serve": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/index.ts"
+    "serve": "node --no-warnings=ExperimentalWarning --loader ts-node/esm src/server.ts"
   },
   "author": "Benczik Roberto-Patrik",
   "license": "ISC",
