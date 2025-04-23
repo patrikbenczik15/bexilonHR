@@ -5,10 +5,9 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IDocumentType extends Document {
   name: string;
   description?: string;
-  allowedUploads: string[];
+  allowedUploads: string[]; // * file types (pdf,docx,txt) etc.
   requiresHRApproval: boolean;
   createdBy: mongoose.Types.ObjectId;
-  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,10 +42,6 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
       ref: "User",
       required: true,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
   },
   {
     timestamps: true,
@@ -54,7 +49,6 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
 );
 
 DocumentTypeSchema.index({ name: 1 }, { unique: true });
-DocumentTypeSchema.index({ isActive: 1 });
 DocumentTypeSchema.index({ requiresHRApproval: 1 });
 
 const DocumentTypeModel: Model<IDocumentType> = mongoose.model<IDocumentType>(

@@ -5,7 +5,7 @@ export interface IDocumentRequest extends Document {
   title: string;
   description?: string;
   requesterId: mongoose.Types.ObjectId;
-  documentType: mongoose.Types.ObjectId; // * document type for which the request is being made(ex. salary negotiation)
+  documentType: mongoose.Types.ObjectId; // * documentRequestType for which the request is being made(ex. salary negotiation)
   requiredDocuments: mongoose.Types.ObjectId[];
   submittedDocuments: mongoose.Types.ObjectId[];
   status: RequestStatus;
