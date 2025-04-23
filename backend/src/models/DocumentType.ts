@@ -6,7 +6,6 @@ export interface IDocumentType extends Document {
   name: string;
   description?: string;
   allowedUploads: string[];
-  requiredDocuments: mongoose.Types.ObjectId[];
   requiresHRApproval: boolean;
   createdBy: mongoose.Types.ObjectId;
   isActive: boolean;
@@ -35,12 +34,6 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
         message: "At least one file type must be allowed",
       },
     },
-    requiredDocuments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "DocumentType",
-      },
-    ],
     requiresHRApproval: {
       type: Boolean,
       default: false,

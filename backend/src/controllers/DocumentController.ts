@@ -2,6 +2,26 @@ import { Request, Response } from "express";
 import { Document, User } from "../models/index.ts";
 import mongoose from "mongoose";
 
+const handleError = (
+  res: Response,
+  error: unknown,
+  defaultMessage: string
+): void => {
+  if (error instanceof mongoose.Error.ValidationError) {
+    console.error("Validation error:", error);
+    res.status(400).json({ error: `Validation failed: ${error.message}` });
+  } else if (error instanceof mongoose.Error.CastError) {
+    console.error("Cast error:", error);
+    res.status(400).json({ error: `Invalid ID format: ${error.message}` });
+  } else if (error instanceof Error) {
+    console.error("Unexpected error:", error);
+    res.status(500).json({ error: defaultMessage });
+  } else {
+    console.error("Unknown error:", error);
+    res.status(500).json({ error: "An unknown error occurred." });
+  }
+};
+
 export const getAllDocuments = async (
   req: Request,
   res: Response
@@ -9,10 +29,11 @@ export const getAllDocuments = async (
   try {
     const documents = await Document.find();
     res.json(documents);
-  } catch {
-    res.status(500).json({ error: "Error getting all documents" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting documents");
   }
 };
+
 export const getDocumentById = async (
   req: Request,
   res: Response
@@ -24,10 +45,11 @@ export const getDocumentById = async (
       return;
     }
     res.json(document);
-  } catch {
-    res.status(500).json({ error: "Error getting document" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting document");
   }
 };
+
 export const getUserByDocumentId = async (
   req: Request,
   res: Response
@@ -35,7 +57,6 @@ export const getUserByDocumentId = async (
   try {
     const document = await Document.findById(req.params.id).select("userId");
     if (!document) {
-      console.log(res);
       res.status(404).json({ error: "Document not found" });
       return;
     }
@@ -47,8 +68,8 @@ export const getUserByDocumentId = async (
     }
 
     res.json(user);
-  } catch {
-    res.status(500).json({ error: "Error getting user" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting user for document");
   }
 };
 
@@ -57,11 +78,41 @@ export const createDocument = async (
   res: Response
 ): Promise<void> => {
   try {
-    const document = new Document(req.body);
+    const { userId, documentType, ...rest } = req.body;
+
+    if (!userId) {
+      res.status(400).json({ error: "userId is required" });
+      return;
+    }
+    if (!mongoose.isValidObjectId(userId)) {
+      res.status(400).json({ error: "Invalid userId format" });
+      return;
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
+
+    // * validate documentType ref
+    if (documentType !== undefined) {
+      if (!mongoose.isValidObjectId(documentType)) {
+        res.status(400).json({ error: "Invalid documentType format" });
+        return;
+      }
+      const DocumentType = mongoose.model("DocumentType");
+      const docType = await DocumentType.findById(documentType);
+      if (!docType) {
+        res.status(400).json({ error: "documentType not found" });
+        return;
+      }
+    }
+
+    const document = new Document({ userId, documentType, ...rest });
     await document.save();
     res.status(201).json(document);
-  } catch {
-    res.status(400).json({ error: "Error creating document" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error creating document");
   }
 };
 
@@ -75,37 +126,46 @@ export const updateDocument = async (
       res.status(404).json({ error: "Document not found" });
       return;
     }
+    // * validate documentType ref ––*
+    if (req.body.documentType !== undefined) {
+      const dtId = req.body.documentType;
 
-    // * check fields
+      // 1. format ObjectId
+      if (!mongoose.isValidObjectId(dtId)) {
+        res.status(400).json({ error: "Invalid documentType format" });
+        return;
+      }
+
+      // 2. există în baza de date?
+      const DocumentType = mongoose.model("DocumentType");
+      const docType = await DocumentType.findById(dtId);
+      if (!docType) {
+        res.status(400).json({ error: "documentType not found" });
+        return;
+      }
+    }
+    // * validate fields
     const schemaFields = Object.keys(Document.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
       field => !schemaFields.includes(field)
     );
 
     if (invalidFields.length > 0) {
-      res.status(400).json({
-        error: `Invalid fields: ${invalidFields.join(", ")}`,
-      });
+      res
+        .status(400)
+        .json({ error: `Invalid fields: ${invalidFields.join(", ")}` });
       return;
     }
 
-    // * update validated fields
+    // * apply updates
     Object.entries(req.body).forEach(([key, value]) => {
-      document.set(key, value); // * set for triggering validations
+      document.set(key, value);
     });
 
     await document.save();
-
     res.json(document);
-  } catch (e) {
-    if (e instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: `Failed validation: ${e.message}` });
-    } else if (e instanceof mongoose.Error.CastError) {
-      res.status(400).json({ error: `Invalid id or typer: ${e.message}` });
-    } else {
-      console.error("Unexpected error:", e);
-      res.status(500).json({ error: "Internal error in updating" });
-    }
+  } catch (e: unknown) {
+    handleError(res, e, "Error updating document");
   }
 };
 
@@ -119,8 +179,8 @@ export const deleteDocument = async (
       res.status(404).json({ error: "Document not found" });
       return;
     }
-    res.json({ message: "Document deleted" });
-  } catch {
-    res.status(500).json({ error: "Error deleting document" });
+    res.status(200).json({ message: "Document deleted" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error deleting document");
   }
 };

@@ -2,6 +2,21 @@ import { Request, Response } from "express";
 import { User } from "../models/index.ts";
 import mongoose from "mongoose";
 
+const handleError = (res: Response, error: any, defaultMessage: string) => {
+  if (error instanceof mongoose.Error.ValidationError) {
+    return res
+      .status(400)
+      .json({ error: `Validation failed: ${error.message}` });
+  } else if (error instanceof mongoose.Error.CastError) {
+    return res
+      .status(400)
+      .json({ error: `Invalid ID format: ${error.message}` });
+  } else {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ error: defaultMessage });
+  }
+};
+
 export const getAllUsers = async (
   req: Request,
   res: Response
@@ -9,10 +24,11 @@ export const getAllUsers = async (
   try {
     const users = await User.find();
     res.json(users);
-  } catch {
-    res.status(500).json({ error: "Error getting users" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting users");
   }
 };
+
 export const getUserById = async (
   req: Request,
   res: Response
@@ -24,8 +40,8 @@ export const getUserById = async (
       return;
     }
     res.json(user);
-  } catch {
-    res.status(500).json({ error: "Error getting user" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting user");
   }
 };
 
@@ -37,8 +53,8 @@ export const createUser = async (
     const user = new User(req.body);
     await user.save();
     res.status(201).json(user);
-  } catch {
-    res.status(400).json({ error: "Error creating user" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error creating user");
   }
 };
 
@@ -53,36 +69,27 @@ export const updateUser = async (
       return;
     }
 
-    // * check fields
+    // * check invalid fields
     const schemaFields = Object.keys(User.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
       field => !schemaFields.includes(field)
     );
-
     if (invalidFields.length > 0) {
-      res.status(400).json({
-        error: `Invalid fields: ${invalidFields.join(", ")}`,
-      });
+      res
+        .status(400)
+        .json({ error: `Invalid fields: ${invalidFields.join(", ")}` });
       return;
     }
 
     // * update validated fields
     Object.entries(req.body).forEach(([key, value]) => {
-      user.set(key, value); // * set for triggering validations
+      user.set(key, value); // * triggers validation
     });
 
     await user.save();
-
     res.json(user);
-  } catch (e) {
-    if (e instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: `Failed validation: ${e.message}` });
-    } else if (e instanceof mongoose.Error.CastError) {
-      res.status(400).json({ error: `Invalid id or typer: ${e.message}` });
-    } else {
-      console.error("Unexpected error:", e);
-      res.status(500).json({ error: "Internal error in updating" });
-    }
+  } catch (e: unknown) {
+    handleError(res, e, "Error updating user");
   }
 };
 
@@ -96,9 +103,9 @@ export const deleteUser = async (
       res.status(404).json({ error: "User not found" });
       return;
     }
-    res.json({ message: "User deleted" });
-  } catch {
-    res.status(500).json({ error: "Error deleting user" });
+    res.status(200).json({ message: "User deleted" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error deleting user");
   }
 };
 
@@ -115,8 +122,8 @@ export const getUserDocuments = async (
 
     const docs = await user.getAccessibleDocuments();
     res.json(docs);
-  } catch {
-    res.status(500).json({ error: "Error getting documents" });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting documents");
   }
 };
 
@@ -131,9 +138,9 @@ export const getUserDocumentRequests = async (
       return;
     }
 
-    const docRequests = await user.getDocumentRequests();
-    res.json(docRequests);
-  } catch {
-    res.status(500).json({ error: "Error getting document requests" });
+    const documentRequests = await user.getDocumentRequests();
+    res.json(documentRequests);
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting document requests");
   }
 };
