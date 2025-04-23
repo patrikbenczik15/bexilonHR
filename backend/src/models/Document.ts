@@ -16,7 +16,6 @@ export interface IDocument extends Document {
   };
   status: DocumentStatus;
   feedback: string;
-  requiredDocuments: mongoose.Types.ObjectId[]; // TODO de schimbat si aici
   approvalHistory: {
     role: UserRole;
     action: "upload" | "approve" | "reject" | "sign" | "request_revision";
@@ -81,13 +80,7 @@ const DocumentSchema: Schema<IDocument> = new Schema<IDocument>(
       type: String,
       default: "",
     },
-    requiredDocuments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Document",
-        default: [],
-      },
-    ],
+
     approvalHistory: [
       {
         role: {
@@ -142,16 +135,17 @@ DocumentSchema.pre<IDocument>("save", async function (next) {
     );
   }
 
-  const missingDocs = await mongoose.model("Document").find({
-    _id: { $nin: this.requiredDocuments },
-    documentType: { $in: docType.requiredDocuments },
-    userId: this.userId,
-    status: { $in: [DocumentStatus.Valid, DocumentStatus.SignedByAdmin] },
-  });
+  // ! TODO MOVE THIS INSIDE DOCUMENT REQUEST -> ERROR HANDLING
+  // const missingDocs = await mongoose.model("Document").find({
+  //   _id: { $nin: this.requiredDocuments },
+  //   documentType: { $in: docType.requiredDocuments },
+  //   userId: this.userId,
+  //   status: { $in: [DocumentStatus.Valid, DocumentStatus.SignedByAdmin] },
+  // });
 
-  if (missingDocs.length > 0) {
-    return next(new Error("Missing required documents"));
-  }
+  // if (missingDocs.length > 0) {
+  //   return next(new Error("Missing required documents"));
+  // }
 
   next();
 });
