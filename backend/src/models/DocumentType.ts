@@ -27,7 +27,6 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
     allowedUploads: {
       type: [String],
       required: true,
-      default: ["pdf"],
       validate: {
         validator: (types: string[]) => types.length > 0,
         message: "At least one file type must be allowed",
@@ -51,9 +50,9 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
 DocumentTypeSchema.index({ name: 1 }, { unique: true });
 DocumentTypeSchema.index({ requiresHRApproval: 1 });
 
-const DocumentTypeModel: Model<IDocumentType> = mongoose.model<IDocumentType>(
+const DocumentType: Model<IDocumentType> = mongoose.model<IDocumentType>(
   "DocumentType",
   DocumentTypeSchema
 );
 
-export default DocumentTypeModel;
+export default DocumentType;

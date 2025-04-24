@@ -49,6 +49,7 @@ function getPermissionsForRole(role: UserRole): Permissions {
       permissions.canManageDocumentTypes = true;
       break;
     case UserRole.HR:
+      permissions.canUploadDocument = true;
       permissions.canSendDocument = true;
       permissions.canViewAllDocuments = true;
       break;
