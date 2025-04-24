@@ -5,6 +5,7 @@ import {
   userRoutes,
   documentRoutes,
   documentTypeRoutes,
+  documentRequestTypeRoutes,
 } from "./routes/index.ts";
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/documents", documentRoutes);
 app.use("/document-types", documentTypeRoutes);
+app.use("/document-request-types", documentRequestTypeRoutes);
 app.get("/", (req, res) => {
   res.send("Hello World from bexilonHR backend!");
 });
@@ -57,8 +59,29 @@ app.get("/", (req, res) => {
 //   }
 // });
 
-connectDB().then(() => {
-  app.listen(3000, () => {
-    console.log("Server open on port 3000");
+connectDB()
+  .then(() => {
+    console.log("Connected to MongoDB");
+
+    app.listen(3000, () => {
+      console.log("Server running on port 3000");
+    });
+  })
+  .catch(error => {
+    if (error.name === "MongoServerError") {
+      switch (error.code) {
+        case 18:
+          console.error("Authentication failed: Invalid username/password.");
+          break;
+        case 13:
+          console.error("Authorization failed: User lacks permissions.");
+          break;
+        default:
+          console.error("MongoDB error:", error.message);
+      }
+    } else {
+      console.error("Connection error:", error.message);
+    }
+
+    process.exit(1); // * stop process on error
   });
-});
