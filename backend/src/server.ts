@@ -6,6 +6,7 @@ import {
   documentRoutes,
   documentTypeRoutes,
   documentRequestTypeRoutes,
+  documentRequestRoutes,
 } from "./routes/index.ts";
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use("/users", userRoutes);
 app.use("/documents", documentRoutes);
 app.use("/document-types", documentTypeRoutes);
 app.use("/document-request-types", documentRequestTypeRoutes);
+app.use("/document-requests", documentRequestRoutes);
 app.get("/", (req, res) => {
   res.send("Hello World from bexilonHR backend!");
 });

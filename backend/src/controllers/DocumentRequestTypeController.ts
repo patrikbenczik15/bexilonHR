@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { User, DocumentRequestType } from "../models/index.ts";
+import { User, DocumentRequestType, DocumentType } from "../models/index.ts";
 
 const handleError = (
   res: Response,
@@ -100,7 +100,6 @@ export const createDocumentRequestType = async (
     handleError(res, e, "Error creating document request type");
   }
 };
-
 export const updateDocumentRequestType = async (
   req: Request,
   res: Response
@@ -112,7 +111,41 @@ export const updateDocumentRequestType = async (
       return;
     }
 
-    // * validate fields
+    // * validate requiredDocuments field
+    if (req.body.requiredDocuments) {
+      if (!Array.isArray(req.body.requiredDocuments)) {
+        res.status(400).json({ error: "requiredDocuments must be an array" });
+        return;
+      }
+      if (req.body.requiredDocuments.length === 0) {
+        res
+          .status(400)
+          .json({ error: "At least one requiredDocument is needed" });
+        return;
+      }
+
+      const invalidIds = req.body.requiredDocuments.filter(
+        (id: any) => !mongoose.isValidObjectId(id)
+      );
+      if (invalidIds.length > 0) {
+        res.status(400).json({
+          error: `Invalid document IDs: ${invalidIds.join(", ")}`,
+        });
+        return;
+      }
+
+      const existingDocsCount = await DocumentType.countDocuments({
+        _id: { $in: req.body.requiredDocuments },
+      });
+
+      if (existingDocsCount !== req.body.requiredDocuments.length) {
+        res.status(400).json({
+          error: "One or more document types don't exist",
+        });
+        return;
+      }
+    }
+
     const schemaFields = Object.keys(DocumentRequestType.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
       f => !schemaFields.includes(f)
@@ -123,12 +156,14 @@ export const updateDocumentRequestType = async (
         .json({ error: `Invalid fields: ${invalidFields.join(", ")}` });
       return;
     }
+    // TODO might change (might not) when auth is done
+    if (req.body.createdBy) {
+      res.status(400).json({ error: "createdBy field cannot be modified" });
+      return;
+    }
 
     Object.entries(req.body).forEach(([key, value]) => {
-      if (key === "requiredDocuments" && !Array.isArray(value)) {
-        throw new Error("requiredDocuments must be an array of IDs");
-      }
-      type.set(key as any, value);
+      type.set(key, value);
     });
 
     await type.save();

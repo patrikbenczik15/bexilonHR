@@ -5,7 +5,7 @@ export interface IDocumentRequest extends Document {
   title: string;
   description?: string;
   requesterId: mongoose.Types.ObjectId;
-  documentType: mongoose.Types.ObjectId; // * documentRequestType for which the request is being made(ex. salary negotiation)
+  documentRequestType: mongoose.Types.ObjectId; // * documentRequestType for which the request is being made(ex. salary negotiation)
   requiredDocuments: mongoose.Types.ObjectId[];
   submittedDocuments: mongoose.Types.ObjectId[];
   status: RequestStatus;
@@ -33,9 +33,9 @@ const DocumentRequestSchema: Schema<IDocumentRequest> =
         required: true,
         index: true,
       },
-      documentType: {
+      documentRequestType: {
         type: Schema.Types.ObjectId,
-        ref: "DocumentType",
+        ref: "DocumentRequestType",
         required: true,
       },
       requiredDocuments: [
