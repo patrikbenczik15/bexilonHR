@@ -126,17 +126,20 @@ export const updateDocument = async (
       res.status(404).json({ error: "Document not found" });
       return;
     }
-    // * validate documentType ref ––*
+
+    if (req.body.userId !== undefined) {
+      res.status(400).json({ error: "Updating userId is not allowed" });
+      return;
+    }
+
     if (req.body.documentType !== undefined) {
       const dtId = req.body.documentType;
 
-      // 1. format ObjectId
       if (!mongoose.isValidObjectId(dtId)) {
         res.status(400).json({ error: "Invalid documentType format" });
         return;
       }
 
-      // 2. există în baza de date?
       const DocumentType = mongoose.model("DocumentType");
       const docType = await DocumentType.findById(dtId);
       if (!docType) {
@@ -144,7 +147,8 @@ export const updateDocument = async (
         return;
       }
     }
-    // * validate fields
+
+    // * validate fields *
     const schemaFields = Object.keys(Document.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
       field => !schemaFields.includes(field)
@@ -157,7 +161,7 @@ export const updateDocument = async (
       return;
     }
 
-    // * apply updates
+    // * apply updates *
     Object.entries(req.body).forEach(([key, value]) => {
       document.set(key, value);
     });

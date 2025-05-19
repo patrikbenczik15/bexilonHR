@@ -35,6 +35,7 @@ const DocumentRequestTypeSchema: Schema<IDocumentRequestType> = new Schema(
     },
   },
   {
+    strict: "throw",
     timestamps: true,
   }
 );

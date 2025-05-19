@@ -28,6 +28,7 @@ const AuditLogSchema: Schema<IAuditLog> = new Schema<IAuditLog>(
     },
   },
   {
+    strict: "throw",
     timestamps: true,
   }
 );

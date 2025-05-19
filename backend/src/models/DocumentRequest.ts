@@ -63,6 +63,7 @@ const DocumentRequestSchema: Schema<IDocumentRequest> =
       },
     },
     {
+      strict: "throw",
       timestamps: true,
     }
   );

@@ -127,6 +127,7 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
     ],
   },
   {
+    strict: "throw",
     timestamps: true,
   }
 );

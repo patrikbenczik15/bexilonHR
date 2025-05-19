@@ -107,6 +107,7 @@ const DocumentSchema: Schema<IDocument> = new Schema<IDocument>(
     metadata: Schema.Types.Mixed,
   },
   {
+    strict: "throw",
     timestamps: true,
     toJSON: {
       virtuals: true,

@@ -59,7 +59,25 @@ export const createDocumentRequestType = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { name, description, requiredDocuments, createdBy } = req.body;
+    const allowedFields = [
+      "name",
+      "description",
+      "requiredDocuments",
+      "createdBy",
+    ];
+    const receivedFields = Object.keys(req.body);
+
+    const invalidFields = receivedFields.filter(
+      field => !allowedFields.includes(field)
+    );
+    if (invalidFields.length > 0) {
+      res.status(400).json({
+        error: `Invalid fields: ${invalidFields.join(", ")}`,
+      });
+      return;
+    }
+
+    const { name, description, requiredDocuments, createdBy } = req.body; // TODO CHANGE WHEN AUTH
 
     if (!name) {
       res.status(400).json({ error: "Name is required" });
@@ -71,11 +89,41 @@ export const createDocumentRequestType = async (
         .json({ error: "At least one requiredDocument is needed" });
       return;
     }
+    // * validate requiredDocuments
+    const requiredDocs = requiredDocuments as string[];
+
+    const invalidFormatIds = requiredDocs.filter(
+      id => !mongoose.isValidObjectId(id)
+    );
+
+    const validIds = requiredDocs.filter(id => mongoose.isValidObjectId(id));
+    const existingDocuments = await DocumentType.find({
+      _id: { $in: validIds },
+    })
+      .select("_id")
+      .lean();
+
+    const existingIds = existingDocuments.map(doc => doc._id.toString());
+    const missingIds = validIds.filter(id => !existingIds.includes(id));
+
+    const allInvalidIds = [...invalidFormatIds, ...missingIds];
+    if (allInvalidIds.length > 0) {
+      res.status(400).json({
+        error: `ID-uri invalide sau inexistente:`,
+        invalidIds: allInvalidIds,
+        details: {
+          invalidFormats: invalidFormatIds,
+          notFound: missingIds,
+        },
+      });
+      return;
+    }
+
     if (!createdBy || !mongoose.isValidObjectId(createdBy)) {
       res.status(400).json({ error: "Valid createdBy (admin ID) is required" });
       return;
     }
-    // TODO add JWT validation for security after auth is done
+
     const user = await User.findById(createdBy);
     if (!user) {
       res.status(400).json({ error: "Creator user not found" });

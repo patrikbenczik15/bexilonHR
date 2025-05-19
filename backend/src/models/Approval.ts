@@ -28,6 +28,7 @@ const ApprovalSchema: Schema<IApproval> = new Schema<IApproval>(
     },
   },
   {
+    strict: "throw",
     timestamps: true,
   }
 );

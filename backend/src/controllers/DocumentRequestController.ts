@@ -5,6 +5,7 @@ import {
   DocumentRequest,
   DocumentRequestType,
   Document,
+  User,
 } from "../models/index.ts";
 
 const handleError = (
@@ -63,12 +64,33 @@ export const getDocumentRequestById = async (
   }
 };
 
-// TODO validare sa nu fie mai multe cereri fix la fel
+// ! posibil ca ce e cu ? sa fie in continuare neinregula(sau sa fie ok, nu a iesit la testare)
+// ? se pot crea documentRequests cu id-uri invalide pt submittedDocuments din documentRequestType
+// ? de rezolvat asta
 export const createDocumentRequest = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
+    const allowedFields = [
+      "title",
+      "description",
+      "documentRequestType",
+      "submittedDocuments",
+      "assignedTo",
+      "requesterId",
+    ];
+
+    const invalidFields = Object.keys(req.body).filter(
+      field => !allowedFields.includes(field)
+    );
+    if (invalidFields.length > 0) {
+      res
+        .status(400)
+        .json({ error: `Invalid fields: ${invalidFields.join(", ")}` });
+      return;
+    }
+
     const {
       title,
       description,
@@ -77,20 +99,25 @@ export const createDocumentRequest = async (
       assignedTo,
     } = req.body;
 
-    if (!title?.trim()) {
-      res.status(400).json({ error: "Title is required" });
+    if (!documentRequestType) {
+      res.status(400).json({ error: "documentRequestType is required" });
       return;
     }
 
-    if (
-      !documentRequestType ||
-      !mongoose.isValidObjectId(documentRequestType)
-    ) {
-      res.status(400).json({ error: "Valid documentRequestType is required" });
+    if (!mongoose.isValidObjectId(documentRequestType)) {
+      res.status(400).json({ error: "Invalid documentRequestType ID" });
       return;
     }
 
-    const requestType = await DocumentRequestType.findById(documentRequestType);
+    const requestType = await DocumentRequestType.findById(documentRequestType)
+      .select("requiredDocuments")
+      .lean();
+
+    if (!requestType) {
+      res.status(400).json({ error: "documentRequestType does not exist" });
+      return;
+    }
+
     if (!requestType) {
       res.status(400).json({ error: "Invalid document request type" });
       return;
@@ -98,6 +125,24 @@ export const createDocumentRequest = async (
 
     if (!Array.isArray(submittedDocuments)) {
       res.status(400).json({ error: "Submitted documents must be an array" });
+      return;
+    }
+
+    const requesterId = req.body.requesterId;
+
+    if (!requesterId) {
+      res.status(400).json({ error: "requesterId is required" });
+      return;
+    }
+
+    if (!mongoose.isValidObjectId(requesterId)) {
+      res.status(400).json({ error: "Invalid requesterId format" });
+      return;
+    }
+
+    const requester = await User.findById(requesterId);
+    if (!requester) {
+      res.status(400).json({ error: "User not found" });
       return;
     }
 
@@ -139,6 +184,19 @@ export const createDocumentRequest = async (
       assignedTo,
     });
 
+    const existingRequest = await DocumentRequest.findOne({
+      requesterId: requesterId,
+      documentRequestType: documentRequestType,
+    });
+
+    if (existingRequest) {
+      res.status(400).json({
+        error: "There already is a document request for this type of document",
+        existingRequestId: existingRequest._id,
+      });
+      return;
+    }
+
     await newRequest.save();
     res.status(201).json(newRequest);
   } catch (e: unknown) {
@@ -147,6 +205,7 @@ export const createDocumentRequest = async (
   }
 };
 
+// TODO se pot posta mai multe documente decat e nevoie
 export const updateDocumentRequest = async (
   req: Request,
   res: Response
@@ -213,15 +272,45 @@ export const updateDocumentRequest = async (
 
       const submittedDocs = await Document.find({
         _id: { $in: req.body.submittedDocuments },
-        documentType: { $in: request.requiredDocuments },
       });
 
-      const coveredTypes = submittedDocs.map(doc =>
-        doc.documentType.toString()
+      if (submittedDocs.length !== req.body.submittedDocuments.length) {
+        res.status(400).json({
+          error: "One or more submitted documents do not exist",
+        });
+        return;
+      }
+
+      const requiredDocTypeIds = request.requiredDocuments.map(id =>
+        id.toString()
       );
-      const missingTypes = request.requiredDocuments
-        .map(id => id.toString())
-        .filter(id => !coveredTypes.includes(id));
+
+      const docTypeMap = new Map();
+
+      for (const doc of submittedDocs) {
+        const docTypeStr = doc.documentType.toString();
+
+        if (!requiredDocTypeIds.includes(docTypeStr)) {
+          res.status(400).json({
+            error: `Document with ID ${doc._id} has type that is not required for this request`,
+          });
+          return;
+        }
+
+        if (docTypeMap.has(docTypeStr)) {
+          res.status(400).json({
+            error: `Multiple documents submitted for the same document type: ${docTypeStr}`,
+          });
+          return;
+        }
+
+        docTypeMap.set(docTypeStr, doc._id);
+      }
+
+      const coveredTypes = Array.from(docTypeMap.keys());
+      const missingTypes = requiredDocTypeIds.filter(
+        id => !coveredTypes.includes(id)
+      );
 
       if (missingTypes.length > 0) {
         res.status(400).json({
@@ -259,7 +348,6 @@ export const updateDocumentRequest = async (
   }
 };
 
-// TODO verifica si la restul la update daca poti adauga campuri inexistente in model
 export const deleteDocumentRequest = async (
   req: Request,
   res: Response

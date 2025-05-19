@@ -55,25 +55,42 @@ export const createDocumentType = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { name, createdBy, allowedUploads } = req.body;
-    // TODO MAJOR SECURITY ISSUES, CREATED BY SHOULDNT BE PASSED IN REQ.BODY
-    // TODO FIX THIS WITH JWT AUTH(WHEN ITS IMPLEMENTED)
+    const allowedFields = [
+      "name",
+      "description",
+      "allowedUploads",
+      "requiresHRApproval",
+      "createdBy",
+    ];
+
+    const invalidFields = Object.keys(req.body).filter(
+      field => !allowedFields.includes(field)
+    );
+    if (invalidFields.length > 0) {
+      res.status(400).json({
+        error: `Câmpuri invalide: ${invalidFields.join(", ")}`,
+      });
+      return;
+    }
+    // TODO CHANGE CREATED BY WHEN AUTH SECURITY ISSEU DONT SEND IN REQ BODY
+    const { name, description, allowedUploads, requiresHRApproval, createdBy } =
+      req.body;
 
     if (!name) {
       res.status(400).json({ error: "Document type name is required" });
       return;
     }
 
-    if (!createdBy) {
-      res.status(400).json({ error: "Admin ID is required" });
-      return;
-    }
-    if (!mongoose.isValidObjectId(createdBy)) {
-      res.status(400).json({ error: "Invalid adminID format" });
+    if (!createdBy || !mongoose.isValidObjectId(createdBy)) {
+      res.status(400).json({ error: "Invalid adminID (createdBy) format" });
       return;
     }
 
-    if (!allowedUploads || allowedUploads.length === 0) {
+    if (
+      !allowedUploads ||
+      !Array.isArray(allowedUploads) ||
+      allowedUploads.length === 0
+    ) {
       res.status(400).json({
         error: "Invalid allowedUploads format, need at least 1 file extension",
       });
@@ -85,15 +102,20 @@ export const createDocumentType = async (
       res.status(400).json({ error: "Admin not found" });
       return;
     }
-
-    if (creator.role != "admin") {
-      res.status(400).json({ error: "User does not have admin privileges" });
+    if (creator.role !== "admin") {
+      res.status(403).json({ error: "User does not have admin privileges" });
       return;
     }
 
-    const documentType = new DocumentType({ name, createdBy, allowedUploads });
-    await documentType.save();
+    const documentType = new DocumentType({
+      name,
+      description,
+      allowedUploads,
+      requiresHRApproval: requiresHRApproval || false,
+      createdBy,
+    });
 
+    await documentType.save();
     res.status(201).json(documentType);
   } catch (e: unknown) {
     console.log("Body request:", req.body);

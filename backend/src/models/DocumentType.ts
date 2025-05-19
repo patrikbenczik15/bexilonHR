@@ -43,6 +43,7 @@ const DocumentTypeSchema: Schema<IDocumentType> = new Schema<IDocumentType>(
     },
   },
   {
+    strict: "throw",
     timestamps: true,
   }
 );

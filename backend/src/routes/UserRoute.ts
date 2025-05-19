@@ -9,7 +9,7 @@ router.post("/", UserController.createUser);
 router.put("/:id", UserController.updateUser);
 router.delete("/:id", UserController.deleteUser);
 router.get("/:id/documents", UserController.getUserDocuments);
-router.get("/:id/documentRequests", UserController.getUserDocumentRequests);
+router.get("/:id/document-requests", UserController.getUserDocumentRequests);
 // !!! TODO route for assignedDocuments
 
 // TODO ? (maybe) router.get("/search", searchUsers);

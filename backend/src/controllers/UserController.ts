@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { User } from "../models/index.ts";
+import { User, DocumentRequest } from "../models/index.ts";
 import mongoose from "mongoose";
 
 const handleError = (res: Response, error: any, defaultMessage: string) => {
@@ -132,15 +132,56 @@ export const getUserDocumentRequests = async (
   res: Response
 ): Promise<void> => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      res.status(404).json({ error: "User not found" });
+    const userId = req.params.id;
+
+    // Validare ID utilizator
+    if (!mongoose.isValidObjectId(userId)) {
+      res.status(400).json({ error: "Format ID utilizator invalid" });
       return;
     }
 
-    const documentRequests = await user.getDocumentRequests();
-    res.json(documentRequests);
+    // Verifică existența utilizatorului
+    const userExists = await User.exists({ _id: userId });
+    if (!userExists) {
+      res.status(404).json({ error: "Utilizatorul nu există" });
+      return;
+    }
+
+    // Obține cererile cu populate corect
+    const requests = await DocumentRequest.find({ requesterId: userId })
+      .populate({
+        path: "documentRequestType",
+        select: "name description requiredDocuments",
+        populate: {
+          path: "requiredDocuments",
+          model: "DocumentType",
+        },
+      })
+      .populate({
+        path: "submittedDocuments",
+        select: "-file.data", // Exclude datele binare
+        populate: [
+          {
+            path: "documentType",
+            model: "DocumentType",
+            select: "name allowedUploads",
+          },
+          {
+            path: "userId",
+            model: "User",
+            select: "name email",
+          },
+        ],
+      })
+      .populate({
+        path: "assignedTo",
+        model: "User",
+        select: "name role",
+      })
+      .lean();
+
+    res.json(requests);
   } catch (e: unknown) {
-    handleError(res, e, "Error getting document requests");
+    handleError(res, e, "Eroare la obținerea cererilor");
   }
 };
