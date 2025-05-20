@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User, DocumentRequest } from "../models/index.ts";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 const handleError = (res: Response, error: any, defaultMessage: string) => {
@@ -134,20 +135,17 @@ export const getUserDocumentRequests = async (
   try {
     const userId = req.params.id;
 
-    // Validare ID utilizator
     if (!mongoose.isValidObjectId(userId)) {
-      res.status(400).json({ error: "Format ID utilizator invalid" });
+      res.status(400).json({ error: "Invalid user ID format " });
       return;
     }
 
-    // Verifică existența utilizatorului
     const userExists = await User.exists({ _id: userId });
     if (!userExists) {
-      res.status(404).json({ error: "Utilizatorul nu există" });
+      res.status(404).json({ error: "User does not exist" });
       return;
     }
 
-    // Obține cererile cu populate corect
     const requests = await DocumentRequest.find({ requesterId: userId })
       .populate({
         path: "documentRequestType",
@@ -159,7 +157,7 @@ export const getUserDocumentRequests = async (
       })
       .populate({
         path: "submittedDocuments",
-        select: "-file.data", // Exclude datele binare
+        select: "-file.data",
         populate: [
           {
             path: "documentType",
@@ -182,6 +180,84 @@ export const getUserDocumentRequests = async (
 
     res.json(requests);
   } catch (e: unknown) {
-    handleError(res, e, "Eroare la obținerea cererilor");
+    handleError(res, e, "Error obtaining requests");
+  }
+};
+
+export const registerUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ error: "Email already exists" });
+      return;
+    }
+
+    const newUser = new User({
+      name,
+      email,
+      password,
+      role: role || "employee",
+    });
+
+    await newUser.save();
+
+    const token = jwt.sign(
+      {
+        userId: newUser._id,
+        role: newUser.role,
+        timestamp: Date.now(),
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      _id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      token,
+    });
+  } catch (e: unknown) {
+    handleError(res, e, "Registration failed");
+  }
+};
+
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" }
+    );
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token,
+    });
+  } catch (e: unknown) {
+    handleError(res, e, "Login failed");
   }
 };

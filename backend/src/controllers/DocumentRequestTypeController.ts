@@ -109,7 +109,7 @@ export const createDocumentRequestType = async (
     const allInvalidIds = [...invalidFormatIds, ...missingIds];
     if (allInvalidIds.length > 0) {
       res.status(400).json({
-        error: `ID-uri invalide sau inexistente:`,
+        error: `Invalid IDs:`,
         invalidIds: allInvalidIds,
         details: {
           invalidFormats: invalidFormatIds,
