@@ -15,7 +15,7 @@ declare global {
 }
 
 if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET nu este definit în .env!");
+  throw new Error("JWT_SECRET not defined in .env!");
 }
 
 export const protect = async (
@@ -60,7 +60,7 @@ export const protect = async (
 };
 
 export const restrictTo = (...roles: UserRole[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): any => {
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         error: "Access forbidden: Insufficient permissions",

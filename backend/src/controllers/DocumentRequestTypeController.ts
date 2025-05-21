@@ -77,7 +77,8 @@ export const createDocumentRequestType = async (
       return;
     }
 
-    const { name, description, requiredDocuments, createdBy } = req.body; // TODO CHANGE WHEN AUTH
+    const { name, description, requiredDocuments } = req.body;
+    const createdBy = req.user?.userId;
 
     if (!name) {
       res.status(400).json({ error: "Name is required" });
@@ -116,21 +117,6 @@ export const createDocumentRequestType = async (
           notFound: missingIds,
         },
       });
-      return;
-    }
-
-    if (!createdBy || !mongoose.isValidObjectId(createdBy)) {
-      res.status(400).json({ error: "Valid createdBy (admin ID) is required" });
-      return;
-    }
-
-    const user = await User.findById(createdBy);
-    if (!user) {
-      res.status(400).json({ error: "Creator user not found" });
-      return;
-    }
-    if (user.role !== "admin") {
-      res.status(403).json({ error: "User does not have admin privileges" });
       return;
     }
 
@@ -204,7 +190,6 @@ export const updateDocumentRequestType = async (
         .json({ error: `Invalid fields: ${invalidFields.join(", ")}` });
       return;
     }
-    // TODO might change (might not) when auth is done
     if (req.body.createdBy) {
       res.status(400).json({ error: "createdBy field cannot be modified" });
       return;

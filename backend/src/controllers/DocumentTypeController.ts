@@ -72,38 +72,11 @@ export const createDocumentType = async (
       });
       return;
     }
-    // TODO CHANGE CREATED BY WHEN AUTH SECURITY ISSEU DONT SEND IN REQ BODY
-    const { name, description, allowedUploads, requiresHRApproval, createdBy } =
-      req.body;
+    const { name, description, allowedUploads, requiresHRApproval } = req.body;
+    const createdBy = req.user?.userId;
 
     if (!name) {
       res.status(400).json({ error: "Document type name is required" });
-      return;
-    }
-
-    if (!createdBy || !mongoose.isValidObjectId(createdBy)) {
-      res.status(400).json({ error: "Invalid adminID (createdBy) format" });
-      return;
-    }
-
-    if (
-      !allowedUploads ||
-      !Array.isArray(allowedUploads) ||
-      allowedUploads.length === 0
-    ) {
-      res.status(400).json({
-        error: "Invalid allowedUploads format, need at least 1 file extension",
-      });
-      return;
-    }
-
-    const creator = await User.findById(createdBy);
-    if (!creator) {
-      res.status(400).json({ error: "Admin not found" });
-      return;
-    }
-    if (creator.role !== "admin") {
-      res.status(403).json({ error: "User does not have admin privileges" });
       return;
     }
 
@@ -135,9 +108,13 @@ export const updateDocumentType = async (
       res.status(404).json({ error: "DocumentType not found" });
       return;
     }
-    // TODO MAJOR SECURITY ISSUES, CREATED BY SHOULDNT BE PASSED IN REQ.BODY
-    // TODO FIX THIS WITH JWT AUTH(WHEN ITS IMPLEMENTED)
-    // TODO CURRENTLY IT DOESNT WORK BECAUSE WE CANT VALIDATE ADMINS.
+
+    // * make sure createdBy can't be changed
+    if (req.body.createdBy) {
+      res.status(400).json({ error: "createdBy field cannot be modified" });
+      return;
+    }
+
     const oldAllowedUploads = documentType.allowedUploads;
 
     // * validate fields

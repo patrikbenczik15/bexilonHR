@@ -27,7 +27,9 @@ const handleError = (
     res.status(500).json({ error: "An unknown error occurred." });
   }
 };
-
+// TODO AUTHENTICATION STILL DOESNT WORK AS EXPECTED
+// TODO USERS CAN ACCESS OTHER USERS PRIVATE DOCUMENTS AND ETC
+// ! EVERYTHING ELSE SEEMS TO WORK PROPERLY (restricted routes, permissions etc)
 export const getAllDocumentRequests = async (
   req: Request,
   res: Response
@@ -128,21 +130,10 @@ export const createDocumentRequest = async (
       return;
     }
 
-    const requesterId = req.body.requesterId;
+    const requesterId = req.user?.userId;
 
     if (!requesterId) {
-      res.status(400).json({ error: "requesterId is required" });
-      return;
-    }
-
-    if (!mongoose.isValidObjectId(requesterId)) {
-      res.status(400).json({ error: "Invalid requesterId format" });
-      return;
-    }
-
-    const requester = await User.findById(requesterId);
-    if (!requester) {
-      res.status(400).json({ error: "User not found" });
+      res.status(401).json({ error: "Authentication required" });
       return;
     }
 
@@ -179,7 +170,7 @@ export const createDocumentRequest = async (
       documentRequestType,
       requiredDocuments: requestType.requiredDocuments,
       submittedDocuments,
-      requesterId: req.body.requesterId, // TODO: Replace with actual user ID after auth
+      requesterId: req.user?.userId,
       status: RequestStatus.Pending,
       assignedTo,
     });
