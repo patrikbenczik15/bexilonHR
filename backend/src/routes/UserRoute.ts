@@ -1,9 +1,9 @@
 import express from "express";
 import { UserController } from "../controllers/index.ts";
-import { protect } from "../middleware/AuthMiddleware.ts";
-const router = express.Router();
+import { UserRole } from "../utils/enums.ts";
+import { protect, restrictTo } from "../middleware/AuthMiddleware.ts";
 
-// * test
+const router = express.Router();
 
 router.get("/me", protect, (req: express.Request, res: express.Response) => {
   res.json({
@@ -12,13 +12,39 @@ router.get("/me", protect, (req: express.Request, res: express.Response) => {
   });
 });
 
-router.get("/", UserController.getAllUsers);
-router.get("/:id", UserController.getUserById);
-router.post("/", UserController.createUser);
-router.put("/:id", UserController.updateUser);
-router.delete("/:id", UserController.deleteUser);
-router.get("/:id/documents", UserController.getUserDocuments);
-router.get("/:id/document-requests", UserController.getUserDocumentRequests);
+// * private routes
+
+router.get(
+  "/",
+  protect,
+  restrictTo(UserRole.Admin, UserRole.HR),
+  UserController.getAllUsers
+);
+
+router.get("/:id", protect, UserController.getUserById);
+router.post(
+  "/",
+  protect,
+  restrictTo(UserRole.Admin),
+  UserController.createUser
+);
+router.put("/:id", protect, UserController.updateUser);
+
+// TODO Might change later so user can delete himself
+router.delete(
+  "/:id",
+  protect,
+  restrictTo(UserRole.Admin),
+  UserController.deleteUser
+);
+
+router.get("/:id/documents", protect, UserController.getUserDocuments);
+
+router.get(
+  "/:id/document-requests",
+  protect,
+  UserController.getUserDocumentRequests
+);
 
 // !!! TODO route for assignedDocuments
 

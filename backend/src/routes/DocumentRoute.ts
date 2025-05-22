@@ -3,6 +3,7 @@ import { DocumentController } from "../controllers/index.ts";
 
 const router = express.Router();
 
+// TODO change protected routes similar to User
 router.get("/", DocumentController.getAllDocuments);
 router.get("/:id", DocumentController.getDocumentById);
 router.get("/:id/user", DocumentController.getUserByDocumentId);
