@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Document, User } from "../models/index.ts";
 import mongoose from "mongoose";
+import { UserRole } from "../utils/enums.ts";
 
 const handleError = (
   res: Response,
@@ -27,10 +28,23 @@ export const getAllDocuments = async (
   res: Response
 ): Promise<void> => {
   try {
+    const role = req.user?.role;
+    if (role !== UserRole.HR && role !== UserRole.Admin) {
+      res
+        .status(403)
+        .json({ error: "Access forbidden: Insufficient permissions" });
+      return;
+    }
+
     const documents = await Document.find();
     res.json(documents);
   } catch (e: unknown) {
-    handleError(res, e, "Error getting documents");
+    if (e instanceof mongoose.Error) {
+      res.status(400).json({ error: e.message });
+    } else {
+      console.error(e);
+      res.status(500).json({ error: "Error getting documents" });
+    }
   }
 };
 
@@ -44,6 +58,15 @@ export const getDocumentById = async (
       res.status(404).json({ error: "Document not found" });
       return;
     }
+
+    if (
+      req.user?.role === UserRole.Employee &&
+      document.userId.toString() !== req.user.userId
+    ) {
+      res.status(403).json({ error: "Access forbidden" });
+      return;
+    }
+
     res.json(document);
   } catch (e: unknown) {
     handleError(res, e, "Error getting document");
@@ -78,7 +101,12 @@ export const createDocument = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { userId, documentType, ...rest } = req.body;
+    const role = req.user?.role;
+    let userId = req.body.userId;
+
+    if (role === UserRole.Employee) {
+      userId = req.user?.userId;
+    }
 
     if (!userId) {
       res.status(400).json({ error: "userId is required" });
@@ -88,11 +116,14 @@ export const createDocument = async (
       res.status(400).json({ error: "Invalid userId format" });
       return;
     }
+
     const user = await User.findById(userId);
     if (!user) {
       res.status(400).json({ error: "User not found" });
       return;
     }
+
+    const { documentType, ...rest } = req.body;
 
     // * validate documentType ref
     if (documentType !== undefined) {
@@ -127,6 +158,18 @@ export const updateDocument = async (
       return;
     }
 
+    const role = req.user?.role;
+    const currentUserId = req.user?.userId;
+    if (
+      role !== UserRole.Admin &&
+      document.userId.toString() !== currentUserId
+    ) {
+      res
+        .status(403)
+        .json({ error: "Access forbidden: Cannot update this document" });
+      return;
+    }
+
     if (req.body.userId !== undefined) {
       res.status(400).json({ error: "Updating userId is not allowed" });
       return;
@@ -148,7 +191,6 @@ export const updateDocument = async (
       }
     }
 
-    // * validate fields *
     const schemaFields = Object.keys(Document.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
       field => !schemaFields.includes(field)

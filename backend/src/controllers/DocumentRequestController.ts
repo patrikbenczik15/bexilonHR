@@ -5,7 +5,6 @@ import {
   DocumentRequest,
   DocumentRequestType,
   Document,
-  User,
 } from "../models/index.ts";
 
 const handleError = (
@@ -27,9 +26,7 @@ const handleError = (
     res.status(500).json({ error: "An unknown error occurred." });
   }
 };
-// TODO AUTHENTICATION STILL DOESNT WORK AS EXPECTED
-// TODO USERS CAN ACCESS OTHER USERS PRIVATE DOCUMENTS AND ETC
-// ! EVERYTHING ELSE SEEMS TO WORK PROPERLY (restricted routes, permissions etc)
+// TODO fix this
 export const getAllDocumentRequests = async (
   req: Request,
   res: Response

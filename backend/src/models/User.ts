@@ -2,6 +2,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 import { DocumentStatus, UserRole, RequestStatus } from "../utils/enums.ts";
 
+// TODO check getDocumentRequest in userroute
+
 interface Permissions {
   canUploadDocument: boolean;
   canSignDocument: boolean;
