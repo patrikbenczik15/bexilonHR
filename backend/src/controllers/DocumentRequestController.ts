@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { RequestStatus } from "../utils/enums.ts";
+import { RequestStatus, UserRole } from "../utils/enums.ts";
 import {
   DocumentRequest,
   DocumentRequestType,
   Document,
+  User,
 } from "../models/index.ts";
 
 const handleError = (
@@ -26,17 +27,34 @@ const handleError = (
     res.status(500).json({ error: "An unknown error occurred." });
   }
 };
-// TODO fix this
+
 export const getAllDocumentRequests = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const requests = await DocumentRequest.find()
-      .populate("requesterId")
-      .populate("documentRequestType")
-      .populate("requiredDocuments");
-    res.json(requests);
+    const userRole = req.user?.role;
+    const userId = req.user?.userId;
+
+    if (userRole === UserRole.Admin || userRole === UserRole.HR) {
+      const requests = await DocumentRequest.find()
+        .populate("requesterId")
+        .populate("documentRequestType")
+        .populate("requiredDocuments");
+      res.json(requests);
+      return;
+    }
+
+    if (userRole === UserRole.Employee && userId) {
+      const requests = await DocumentRequest.find({ requesterId: userId })
+        .populate("requesterId")
+        .populate("documentRequestType")
+        .populate("requiredDocuments");
+      res.json(requests);
+      return;
+    }
+
+    res.status(403).json({ error: "Access forbidden" });
   } catch (e: unknown) {
     handleError(res, e, "Error getting document requests");
   }
@@ -47,7 +65,11 @@ export const getDocumentRequestById = async (
   res: Response
 ): Promise<void> => {
   try {
-    const request = await DocumentRequest.findById(req.params.id)
+    const userRole = req.user?.role;
+    const userId = req.user?.userId;
+    const requestId = req.params.id;
+
+    const request = await DocumentRequest.findById(requestId)
       .populate("requesterId")
       .populate("documentRequestType")
       .populate("requiredDocuments")
@@ -57,12 +79,63 @@ export const getDocumentRequestById = async (
       res.status(404).json({ error: "DocumentRequest not found" });
       return;
     }
+
+    const isOwner = request.requesterId.toString() === userId;
+    const isAdminOrHR = userRole === UserRole.Admin || userRole === UserRole.HR;
+
+    if (!isOwner && !isAdminOrHR) {
+      res.status(403).json({ error: "Access forbidden" });
+      return;
+    }
+
     res.json(request);
   } catch (e: unknown) {
     handleError(res, e, "Error getting document request");
   }
 };
 
+export const getDocumentRequestsByUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const currentUserId = req.user?.userId;
+    const currentUserRole = req.user?.role;
+
+    const canAccess =
+      currentUserRole === UserRole.Admin ||
+      currentUserRole === UserRole.HR ||
+      userId === currentUserId?.toString();
+
+    if (!canAccess) {
+      res.status(403).json({ error: "Access forbidden" });
+      return;
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const requests = await DocumentRequest.find({ requesterId: userId })
+      .populate("documentRequestType")
+      .populate("requiredDocuments")
+      .populate("submittedDocuments");
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      requests,
+    });
+  } catch (e: unknown) {
+    handleError(res, e, "Error getting user document requests");
+  }
+};
 // ! posibil ca ce e cu ? sa fie in continuare neinregula(sau sa fie ok, nu a iesit la testare)
 // ? se pot crea documentRequests cu id-uri invalide pt submittedDocuments din documentRequestType
 // ? de rezolvat asta
@@ -193,7 +266,6 @@ export const createDocumentRequest = async (
   }
 };
 
-// TODO se pot posta mai multe documente decat e nevoie
 export const updateDocumentRequest = async (
   req: Request,
   res: Response
@@ -202,6 +274,21 @@ export const updateDocumentRequest = async (
     const request = await DocumentRequest.findById(req.params.id);
     if (!request) {
       res.status(404).json({ error: "DocumentRequest not found" });
+      return;
+    }
+
+    const currentUserId = req.user?.userId;
+    const currentUserRole = req.user?.role;
+    const isOwner =
+      request.requesterId.toString() === currentUserId?.toString();
+    const isAdminOrHR =
+      currentUserRole === UserRole.Admin || currentUserRole === UserRole.HR;
+
+    if (!isOwner && !isAdminOrHR) {
+      res.status(403).json({
+        error:
+          "Access forbidden: You can only modify your own document requests",
+      });
       return;
     }
 
@@ -224,6 +311,27 @@ export const updateDocumentRequest = async (
         error: `Invalid fields: ${invalidFields.join(", ")}`,
       });
       return;
+    }
+
+    if (!isAdminOrHR) {
+      const employeeAllowedFields = [
+        "title",
+        "description",
+        "submittedDocuments",
+      ];
+
+      const restrictedFields = Object.keys(req.body).filter(
+        field => !employeeAllowedFields.includes(field)
+      );
+
+      if (restrictedFields.length > 0) {
+        res.status(403).json({
+          error: `Employees cannot modify these fields: ${restrictedFields.join(
+            ", "
+          )}`,
+        });
+        return;
+      }
     }
 
     if (req.body.requesterId) {
@@ -269,6 +377,23 @@ export const updateDocumentRequest = async (
         return;
       }
 
+      if (!isAdminOrHR) {
+        const docOwners = await Document.find({
+          _id: { $in: req.body.submittedDocuments },
+        }).select("userId");
+
+        const notOwnedDocs = docOwners.filter(
+          doc => doc.userId.toString() !== currentUserId?.toString()
+        );
+
+        if (notOwnedDocs.length > 0) {
+          res.status(403).json({
+            error: "You can only submit documents that you have uploaded",
+          });
+          return;
+        }
+      }
+
       const requiredDocTypeIds = request.requiredDocuments.map(id =>
         id.toString()
       );
@@ -310,13 +435,17 @@ export const updateDocumentRequest = async (
       request.submittedDocuments = req.body.submittedDocuments;
     }
 
-    const updatableFields = [
-      "title",
-      "description",
-      "status",
-      "feedback",
-      "assignedTo",
-    ];
+    const updatableFields = isAdminOrHR
+      ? [
+          "title",
+          "description",
+          "status",
+          "feedback",
+          "assignedTo",
+          "documentRequestType",
+        ]
+      : ["title", "description"];
+
     Object.entries(req.body).forEach(([key, value]) => {
       if (updatableFields.includes(key)) {
         request.set(key, value);
