@@ -10,7 +10,6 @@ router.use(protect);
 router.get("/", DocumentRequestTypeController.getAllDocumentRequestTypes);
 router.get("/:id", DocumentRequestTypeController.getDocumentRequestTypeById);
 
-// * only admin can create, modify or delete documentRequestTypes
 router.post(
   "/",
   restrictTo(UserRole.Admin),

@@ -39,12 +39,7 @@ export const getAllDocuments = async (
     const documents = await Document.find();
     res.json(documents);
   } catch (e: unknown) {
-    if (e instanceof mongoose.Error) {
-      res.status(400).json({ error: e.message });
-    } else {
-      console.error(e);
-      res.status(500).json({ error: "Error getting documents" });
-    }
+    handleError(res, e, "Error getting documents");
   }
 };
 
@@ -102,48 +97,95 @@ export const createDocument = async (
 ): Promise<void> => {
   try {
     const role = req.user?.role;
-    let userId = req.body.userId;
+    let userId: string;
 
     if (role === UserRole.Employee) {
-      userId = req.user?.userId;
-    }
-
-    if (!userId) {
-      res.status(400).json({ error: "userId is required" });
+      if (req.body.userId) {
+        res.status(403).json({
+          error:
+            "Employees cannot specify userId - will be set automatically from token",
+        });
+        return;
+      }
+      userId = req.user!.userId;
+    } else if (role === UserRole.Admin) {
+      if (!req.body.userId) {
+        res.status(400).json({
+          error: "Admin must provide userId in request body",
+        });
+        return;
+      }
+      userId = req.body.userId;
+    } else {
+      res.status(403).json({
+        error: "Not authorized to create documents",
+      });
       return;
     }
+
     if (!mongoose.isValidObjectId(userId)) {
-      res.status(400).json({ error: "Invalid userId format" });
+      res.status(400).json({
+        error: "Invalid userId format - must be a valid ObjectId",
+      });
       return;
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      res.status(400).json({ error: "User not found" });
+      res.status(400).json({
+        error: "User not found in database",
+      });
       return;
     }
 
-    const { documentType, ...rest } = req.body;
+    const { documentType, ...restOfBody } = req.body;
 
-    // * validate documentType ref
     if (documentType !== undefined) {
       if (!mongoose.isValidObjectId(documentType)) {
-        res.status(400).json({ error: "Invalid documentType format" });
+        res.status(400).json({
+          error: "Invalid documentType format - must be a valid ObjectId",
+        });
         return;
       }
+
       const DocumentType = mongoose.model("DocumentType");
       const docType = await DocumentType.findById(documentType);
       if (!docType) {
-        res.status(400).json({ error: "documentType not found" });
+        res.status(400).json({
+          error: "DocumentType not found in database",
+        });
         return;
       }
     }
 
-    const document = new Document({ userId, documentType, ...rest });
+    const schemaFields = Object.keys(Document.schema.obj);
+    const invalidFields = Object.keys(restOfBody).filter(
+      field => !schemaFields.includes(field)
+    );
+
+    if (invalidFields.length > 0) {
+      res.status(400).json({
+        error: `Invalid fields: ${invalidFields.join(", ")}`,
+      });
+      return;
+    }
+
+    const documentData = {
+      userId,
+      ...(documentType && { documentType }),
+      ...restOfBody,
+    };
+
+    const document = new Document(documentData);
     await document.save();
-    res.status(201).json(document);
-  } catch (e: unknown) {
-    handleError(res, e, "Error creating document");
+
+    res.status(201).json({
+      success: true,
+      message: "Document created successfully",
+      document,
+    });
+  } catch (error) {
+    handleError(res, error, "Error creating document");
   }
 };
 
@@ -203,7 +245,6 @@ export const updateDocument = async (
       return;
     }
 
-    // * apply updates *
     Object.entries(req.body).forEach(([key, value]) => {
       document.set(key, value);
     });

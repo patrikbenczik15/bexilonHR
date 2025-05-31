@@ -190,11 +190,6 @@ export const createDocumentRequest = async (
       return;
     }
 
-    if (!requestType) {
-      res.status(400).json({ error: "Invalid document request type" });
-      return;
-    }
-
     if (!Array.isArray(submittedDocuments)) {
       res.status(400).json({ error: "Submitted documents must be an array" });
       return;
@@ -224,7 +219,24 @@ export const createDocumentRequest = async (
       documentType: { $in: requiredDocs },
     });
 
-    const coveredTypes = submittedDocs.map(doc => doc.documentType.toString());
+    // * check ownership
+    const notOwnedDocs = submittedDocs.filter(
+      doc => (doc as any).userId.toString() !== requesterId.toString()
+    );
+
+    if (notOwnedDocs.length > 0) {
+      const ids = notOwnedDocs
+        .map(doc => (doc as any)._id.toString())
+        .join(", ");
+      res.status(403).json({
+        error: `You are not authorized to submit documents that don't belong to you. Invalid IDs: ${ids}`,
+      });
+      return;
+    }
+
+    const coveredTypes = submittedDocs.map(doc =>
+      (doc as any).documentType.toString()
+    );
     const missingTypes = requiredDocs.filter(id => !coveredTypes.includes(id));
 
     if (missingTypes.length > 0) {
@@ -240,7 +252,7 @@ export const createDocumentRequest = async (
       documentRequestType,
       requiredDocuments: requestType.requiredDocuments,
       submittedDocuments,
-      requesterId: req.user?.userId,
+      requesterId: requesterId,
       status: RequestStatus.Pending,
       assignedTo,
     });
@@ -298,7 +310,6 @@ export const updateDocumentRequest = async (
       "status",
       "feedback",
       "assignedTo",
-      "documentRequestType",
       "submittedDocuments",
     ];
 
@@ -340,14 +351,8 @@ export const updateDocumentRequest = async (
     }
 
     if (req.body.documentRequestType) {
-      const newType = await DocumentRequestType.findById(
-        req.body.documentRequestType
-      );
-      if (!newType) {
-        res.status(400).json({ error: "Invalid document request type" });
-        return;
-      }
-      request.requiredDocuments = newType.requiredDocuments;
+      res.status(400).json({ error: "documentRequestType cannot be modified" });
+      return;
     }
 
     if (req.body.submittedDocuments) {
@@ -436,14 +441,7 @@ export const updateDocumentRequest = async (
     }
 
     const updatableFields = isAdminOrHR
-      ? [
-          "title",
-          "description",
-          "status",
-          "feedback",
-          "assignedTo",
-          "documentRequestType",
-        ]
+      ? ["title", "description", "status", "feedback", "assignedTo"]
       : ["title", "description"];
 
     Object.entries(req.body).forEach(([key, value]) => {

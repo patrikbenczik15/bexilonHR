@@ -21,7 +21,7 @@ const handleError = (
     res.status(500).json({ error: "An unknown error occurred." });
   }
 };
-
+// ! TODO fix so employee can see all these(bug seeing all document types)
 export const getAllDocumentRequestTypes = async (
   req: Request,
   res: Response
