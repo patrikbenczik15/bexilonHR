@@ -11,46 +11,46 @@ import { useTheme } from '@mui/system';
 
 const userTestimonials = [
   {
-    avatar: <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />,
-    name: 'Remy Sharp',
-    occupation: 'Senior Engineer',
+    avatar: <Avatar alt="Ana Popescu" src="/static/images/avatar/1.jpg" />,
+    name: 'Ana Popescu',
+    occupation: 'HR Manager',
     testimonial:
-      "I absolutely love how versatile this product is! Whether I'm tackling work projects or indulging in my favorite hobbies, it seamlessly adapts to my changing needs. Its intuitive design has truly enhanced my daily routine, making tasks more efficient and enjoyable.",
+      "BexilonHR has transformed our document workflow—everything is centralized and transparent. Our team now spends 50% less time chasing approvals!",
   },
   {
-    avatar: <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />,
-    name: 'Travis Howard',
-    occupation: 'Lead Product Designer',
+    avatar: <Avatar alt="Mihai Ionescu" src="/static/images/avatar/2.jpg" />,
+    name: 'Mihai Ionescu',
+    occupation: 'Recruitment Lead',
     testimonial:
-      "One of the standout features of this product is the exceptional customer support. In my experience, the team behind this product has been quick to respond and incredibly helpful. It's reassuring to know that they stand firmly behind their product.",
+      "The automated reminders and approval tracking in BexilonHR ensure nothing slips through the cracks. It's a game-changer for compliance and accountability.",
   },
   {
-    avatar: <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />,
-    name: 'Cindy Baker',
+    avatar: <Avatar alt="Elena Georgescu" src="/static/images/avatar/3.jpg" />,
+    name: 'Elena Georgescu',
+    occupation: 'People Operations Director',
+    testimonial:
+      "I love the intuitive dashboard and real-time analytics in BexilonHR. It gives me instant insights into our document statuses without endless email threads.",
+  },
+  {
+    avatar: <Avatar alt="Cristian Vlad" src="/static/images/avatar/4.jpg" />,
+    name: 'Cristian Vlad',
+    occupation: 'Office Administrator',
+    testimonial:
+      "Uploading and sharing files with BexilonHR is seamless. The drag-and-drop interface and secure access controls make my day so much smoother.",
+  },
+  {
+    avatar: <Avatar alt="Ioana Marinescu" src="/static/images/avatar/5.jpg" />,
+    name: 'Ioana Marinescu',
+    occupation: 'Compliance Officer',
+    testimonial:
+      "Thanks to BexilonHR’s expiration alerts, we never miss a renewal deadline. Our audit readiness has never been better!",
+  },
+  {
+    avatar: <Avatar alt="Andrei Popa" src="/static/images/avatar/6.jpg" />,
+    name: 'Andrei Popa',
     occupation: 'CTO',
     testimonial:
-      'The level of simplicity and user-friendliness in this product has significantly simplified my life. I appreciate the creators for delivering a solution that not only meets but exceeds user expectations.',
-  },
-  {
-    avatar: <Avatar alt="Remy Sharp" src="/static/images/avatar/4.jpg" />,
-    name: 'Julia Stewart',
-    occupation: 'Senior Engineer',
-    testimonial:
-      "I appreciate the attention to detail in the design of this product. The small touches make a big difference, and it's evident that the creators focused on delivering a premium experience.",
-  },
-  {
-    avatar: <Avatar alt="Travis Howard" src="/static/images/avatar/5.jpg" />,
-    name: 'John Smith',
-    occupation: 'Product Designer',
-    testimonial:
-      "I've tried other similar products, but this one stands out for its innovative features. It's clear that the makers put a lot of thought into creating a solution that truly addresses user needs.",
-  },
-  {
-    avatar: <Avatar alt="Cindy Baker" src="/static/images/avatar/6.jpg" />,
-    name: 'Daniel Wolf',
-    occupation: 'CDO',
-    testimonial:
-      "The quality of this product exceeded my expectations. It's durable, well-designed, and built to last. Definitely worth the investment!",
+      "Integrating BexilonHR with our existing HR systems was effortless. The API documentation is clear, and support was incredibly responsive.",
   },
 ];
 
@@ -109,9 +109,8 @@ export default function Testimonials() {
           Testimonials
         </Typography>
         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-          See what our customers love about our products. Discover how we excel in
-          efficiency, durability, and satisfaction. Join us for quality, innovation,
-          and reliable support.
+          Hear from BexilonHR users who’ve streamlined their HR processes, boosted
+          productivity, and never looked back.
         </Typography>
       </Box>
       <Grid container spacing={2}>
