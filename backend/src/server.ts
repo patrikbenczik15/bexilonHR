@@ -1,6 +1,7 @@
 import express from "express";
 import connectDB from "./db/db.ts";
 import dotenv from "dotenv";
+import cors from "cors";
 import {
   userRoutes,
   documentRoutes,
@@ -14,6 +15,11 @@ dotenv.config();
 // TODO how are images stored in db?
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
@@ -26,12 +32,13 @@ app.get("/", (req, res) => {
   res.send("Hello World from bexilonHR backend!");
 });
 
+const PORT = process.env.PORT || 5000;
 connectDB()
   .then(() => {
     console.log("Connected to MongoDB");
 
-    app.listen(3000, () => {
-      console.log("Server running on port 3000");
+    app.listen(5173, () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch(error => {

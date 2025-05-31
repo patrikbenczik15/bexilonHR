@@ -17,7 +17,9 @@ import AppTheme from '../../theme/AppTheme';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../common/CustomIcons';
 import Footer from '../Footer/Footer';
 import NavBar from '../NavBar/NavBar';
-// TODO no scroll -> card too big -> need to make it so it can be seen without scrolling down
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -63,6 +65,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const navigate = useNavigate();
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -101,19 +104,32 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  if (!validateInputs()) return;
+
+  const data = new FormData(event.currentTarget);
+
+  const user = {
+    name: data.get('name'),
+    email: data.get('email'),
+    password: data.get('password'),
   };
+
+  try {
+    const response = await axios.post('http://localhost:5173/api/auth/register', user);
+    console.log(response.data);
+    navigate('/signin'); 
+  } catch (error: any) {
+    console.error(error.response?.data || error.message);
+
+    if (error.response?.data?.message?.includes('email')) {
+      setEmailError(true);
+      setEmailErrorMessage(error.response.data.message);
+    }
+  }
+};
+
 
   return (
     <AppTheme {...props}>
