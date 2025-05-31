@@ -41,13 +41,8 @@ export default function Hero() {
       sx={(theme) => ({
         width: '100%',
         backgroundRepeat: 'no-repeat',
-
         backgroundImage:
-          'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 90%), transparent)',
-        ...theme.applyStyles('dark', {
-          backgroundImage:
-            'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
-        }),
+          'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
       })}
     >
       <Container
@@ -73,7 +68,7 @@ export default function Hero() {
               fontSize: 'clamp(3rem, 10vw, 3.5rem)',
             }}
           >
-            Our&nbsp;latest&nbsp;
+           Empower Your&nbsp;
             <Typography
               component="span"
               variant="h1"
@@ -85,7 +80,7 @@ export default function Hero() {
                 }),
               })}
             >
-              products
+              HR Workflow
             </Typography>
           </Typography>
           <Typography
@@ -95,9 +90,8 @@ export default function Hero() {
               width: { sm: '100%', md: '80%' },
             }}
           >
-            Explore our cutting-edge dashboard, delivering high-quality solutions
-            tailored to your needs. Elevate your experience with top-tier features
-            and services.
+            Streamline document approvals, track compliance, and keep your team aligned
+            with Bexilon's intuitive platform designed for modern HR needs.
           </Typography>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}

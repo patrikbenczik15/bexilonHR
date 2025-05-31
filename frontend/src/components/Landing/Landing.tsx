@@ -1,4 +1,3 @@
-import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppTheme from '../../theme/AppTheme';
 import NavBar from '../NavBar/NavBar';
@@ -10,18 +9,19 @@ import Highlights from './Highlights';
 import Pricing from './Pricing';
 import FAQ from './FAQ';
 import Footer from '../Footer/Footer';
-
 const sections = [
   { id: 'features', component: <Features /> },
   { id: 'testimonials', component: <Testimonials /> },
   { id: 'highlights', component: <Highlights /> },
   { id: 'pricing', component: <Pricing /> },
-  { id: 'faq', component: <FAQ /> }
+  { id: 'faq', component: <FAQ /> },
+  { id: 'footer', component: <Footer /> }
 ];
 
-export default function Landing() {
+// TODO margin prea mari
+export default function Landing(props: { disableCustomTheme?: boolean }) {
   return (
-    <AppTheme>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <NavBar />
       
@@ -33,8 +33,6 @@ export default function Landing() {
           </Box>
         ))}
       </Box>
-      
-      <Footer />
     </AppTheme>
   );
 }
