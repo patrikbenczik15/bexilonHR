@@ -511,3 +511,27 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     handleError(res, e, "Login failed");
   }
 };
+
+export const checkEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ error: "Email is required" });
+      return;
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(200).json({ exists: false });
+    }
+  } catch (e: unknown) {
+    res.status(500).json({ error: "Server error checking email" });
+  }
+};

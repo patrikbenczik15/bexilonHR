@@ -1,81 +1,81 @@
-import NavBar from '../NavBar/NavBar';
-import Footer from '../Footer/Footer';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import AppTheme from '../../theme/AppTheme';
-import { CssBaseline } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import NavBar from "../NavBar/NavBar";
+import Footer from "../Footer/Footer";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import Chip from "@mui/material/Chip";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import AppTheme from "../../theme/AppTheme";
+import { CssBaseline } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 const tiers = [
   {
-    title: 'Starter',
-    price: '0',
+    title: "Starter",
+    price: "0",
     description: [
-      'Up to 5 users',
-      '1 GB secure storage',
-      'Basic document workflows',
-      'Email support',
+      "Up to 5 users",
+      "1 GB secure storage",
+      "Basic document workflows",
+      "Email support",
     ],
-    buttonText: 'Get Started',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
+    buttonText: "Get Started",
+    buttonVariant: "outlined",
+    buttonColor: "primary",
   },
   {
-    title: 'Professional',
-    subheader: 'Most Popular',
-    price: '25',
+    title: "Professional",
+    subheader: "Most Popular",
+    price: "25",
     description: [
-      'Up to 25 users',
-      '10 GB encrypted storage',
-      'Automated approval pipelines',
-      'Priority email & chat support',
-      'Custom branding',
+      "Up to 25 users",
+      "10 GB encrypted storage",
+      "Automated approval pipelines",
+      "Priority email & chat support",
+      "Custom branding",
     ],
-    buttonText: 'Upgrade Now',
-    buttonVariant: 'contained',
-    buttonColor: 'secondary',
+    buttonText: "Upgrade Now",
+    buttonVariant: "contained",
+    buttonColor: "secondary",
   },
   {
-    title: 'Enterprise',
-    price: 'Custom',
+    title: "Enterprise",
+    price: "Custom",
     description: [
-      'Unlimited users',
-      'Unlimited secure storage',
-      'Dedicated account manager',
-      '24/7 phone & email support',
-      'Advanced compliance tools',
+      "Unlimited users",
+      "Unlimited secure storage",
+      "Dedicated account manager",
+      "24/7 phone & email support",
+      "Advanced compliance tools",
     ],
-    buttonText: 'Contact Sales',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
+    buttonText: "Contact Sales",
+    buttonVariant: "outlined",
+    buttonColor: "primary",
   },
 ];
 
 const PricingContainer = styled(Stack)(({ theme }) => ({
-  position: 'relative',
-  minHeight: 'calc(100vh - 120px)',
+  position: "relative",
+  minHeight: "calc(100vh - 120px)",
   padding: theme.spacing(2),
   marginTop: "-5.7rem",
   paddingTop: theme.spacing(8),
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
     paddingTop: theme.spacing(12),
   },
-  '&::before': {
+  "&::before": {
     content: '""',
-    display: 'block',
-    position: 'absolute',
+    display: "block",
+    position: "absolute",
     zIndex: -1,
     inset: 0,
   },
@@ -92,59 +92,67 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
           sx={{
             pt: { xs: 4, sm: 12 },
             pb: { xs: 8, sm: 16 },
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             gap: { xs: 3, sm: 6 },
           }}
         >
           <Box
             sx={{
-              width: { sm: '100%', md: '60%' },
-              textAlign: { sm: 'left', md: 'center' },
+              width: { sm: "100%", md: "60%" },
+              textAlign: { sm: "left", md: "center" },
             }}
           >
             <Typography
               component="h2"
               variant="h4"
               gutterBottom
-              sx={{ color: 'text.primary' }}
+              sx={{ color: "text.primary" }}
             >
               Pricing Plans
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Choose the plan that fits your organization’s HR document needs. 
+            <Typography variant="body1" sx={{ color: "text.secondary" }}>
+              Choose the plan that fits your organization’s HR document needs.
               Scale as you grow with flexible features and top-tier support.
             </Typography>
           </Box>
           <Grid
             container
             spacing={3}
-            sx={{ alignItems: 'center', justifyContent: 'center', width: '100%' }}
+            sx={{
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+            }}
           >
-            {tiers.map((tier) => (
+            {tiers.map(tier => (
               <Grid
-                size={{ xs: 12, sm: tier.title === 'Enterprise' ? 12 : 6, md: 4 }}
+                size={{
+                  xs: 12,
+                  sm: tier.title === "Enterprise" ? 12 : 6,
+                  md: 4,
+                }}
                 key={tier.title}
               >
                 <Card
                   sx={[
                     {
                       p: 2,
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                       gap: 4,
                     },
-                    tier.title === 'Professional' &&
-                      ((theme) => ({
-                        border: 'none',
+                    tier.title === "Professional" &&
+                      (theme => ({
+                        border: "none",
                         background:
-                          'radial-gradient(circle at 50% 0%, hsl(220, 20%, 35%), hsl(220, 30%, 6%))',
+                          "radial-gradient(circle at 50% 0%, hsl(220, 20%, 35%), hsl(220, 30%, 6%))",
                         boxShadow: `0 8px 12px hsla(220, 20%, 42%, 0.2)`,
-                        ...theme.applyStyles('dark', {
+                        ...theme.applyStyles("dark", {
                           background:
-                            'radial-gradient(circle at 50% 0%, hsl(220, 20%, 20%), hsl(220, 30%, 16%))',
+                            "radial-gradient(circle at 50% 0%, hsl(220, 20%, 20%), hsl(220, 30%, 16%))",
                           boxShadow: `0 8px 12px hsla(0, 0%, 0%, 0.8)`,
                         }),
                       })),
@@ -155,63 +163,78 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
                       sx={[
                         {
                           mb: 1,
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
                           gap: 2,
                         },
-                        tier.title === 'Professional'
-                          ? { color: 'grey.100' }
-                          : { color: '' },
+                        tier.title === "Professional"
+                          ? { color: "grey.100" }
+                          : { color: "" },
                       ]}
                     >
                       <Typography component="h3" variant="h6">
                         {tier.title}
                       </Typography>
                       {tier.subheader && (
-                        <Chip icon={<AutoAwesomeIcon />} label={tier.subheader} />
+                        <Chip
+                          icon={<AutoAwesomeIcon />}
+                          label={tier.subheader}
+                        />
                       )}
                     </Box>
                     <Box
                       sx={[
                         {
-                          display: 'flex',
-                          alignItems: 'baseline',
+                          display: "flex",
+                          alignItems: "baseline",
                         },
-                        tier.title === 'Professional'
-                          ? { color: 'grey.50' }
+                        tier.title === "Professional"
+                          ? { color: "grey.50" }
                           : { color: null },
                       ]}
                     >
                       <Typography component="h3" variant="h2">
-                        {tier.title === 'Enterprise' ? tier.price : `$${tier.price}`}
+                        {tier.title === "Enterprise"
+                          ? tier.price
+                          : `$${tier.price}`}
                       </Typography>
                       <Typography component="h3" variant="h6">
-                        &nbsp; {tier.title === 'Enterprise' ? 'per custom plan' : 'per month'}
+                        &nbsp;{" "}
+                        {tier.title === "Enterprise"
+                          ? "per custom plan"
+                          : "per month"}
                       </Typography>
                     </Box>
-                    <Divider sx={{ my: 2, opacity: 0.8, borderColor: 'divider' }} />
-                    {tier.description.map((line) => (
+                    <Divider
+                      sx={{ my: 2, opacity: 0.8, borderColor: "divider" }}
+                    />
+                    {tier.description.map(line => (
                       <Box
                         key={line}
-                        sx={{ py: 1, display: 'flex', gap: 1.5, alignItems: 'center' }}
+                        sx={{
+                          py: 1,
+                          display: "flex",
+                          gap: 1.5,
+                          alignItems: "center",
+                        }}
                       >
                         <CheckCircleRoundedIcon
                           sx={[
                             {
                               width: 20,
                             },
-                            tier.title === 'Professional'
-                              ? { color: 'primary.light' }
-                              : { color: 'primary.main' },
+                            tier.title === "Professional"
+                              ? { color: "primary.light" }
+                              : { color: "primary.main" },
                           ]}
                         />
                         <Typography
                           variant="subtitle2"
-                          component={'span'}
+                          component={"span"}
                           sx={[
-                            tier.title === 'Professional'
-                              ? { color: 'grey.50' }
+                            tier.title === "Professional"
+                              ? { color: "grey.50" }
                               : { color: null },
                           ]}
                         >
@@ -223,8 +246,8 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
                   <CardActions>
                     <Button
                       fullWidth
-                      variant={tier.buttonVariant as 'outlined' | 'contained'}
-                      color={tier.buttonColor as 'primary' | 'secondary'}
+                      variant={tier.buttonVariant as "outlined" | "contained"}
+                      color={tier.buttonColor as "primary" | "secondary"}
                     >
                       {tier.buttonText}
                     </Button>

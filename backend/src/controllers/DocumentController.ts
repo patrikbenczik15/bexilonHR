@@ -160,7 +160,7 @@ export const createDocument = async (
 
     const schemaFields = Object.keys(Document.schema.obj);
     const invalidFields = Object.keys(restOfBody).filter(
-      field => !schemaFields.includes(field)
+      (field) => !schemaFields.includes(field)
     );
 
     if (invalidFields.length > 0) {
@@ -235,7 +235,7 @@ export const updateDocument = async (
 
     const schemaFields = Object.keys(Document.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
-      field => !schemaFields.includes(field)
+      (field) => !schemaFields.includes(field)
     );
 
     if (invalidFields.length > 0) {
