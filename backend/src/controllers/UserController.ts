@@ -4,8 +4,6 @@ import { UserRole } from "../utils/enums.ts";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-// TODO make sure in auth/register only name, email,password can be sent
-// TODO make sure in auth/login only email and password can be sent
 const handleError = (res: Response, error: any, defaultMessage: string) => {
   if (error instanceof mongoose.Error.ValidationError) {
     return res
@@ -76,7 +74,7 @@ export const createUser = async (
 
   const allowedFields = ["name", "email", "password", "role"];
   const extraFields = Object.keys(req.body).filter(
-    f => !allowedFields.includes(f)
+    (f) => !allowedFields.includes(f)
   );
   if (extraFields.length > 0) {
     res.status(400).json({
@@ -163,7 +161,7 @@ export const updateUser = async (
 
     const schemaFields = Object.keys(User.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
-      field => !schemaFields.includes(field)
+      (field) => !schemaFields.includes(field)
     );
 
     if (invalidFields.length > 0) {
@@ -175,7 +173,7 @@ export const updateUser = async (
       return;
     }
 
-    const attemptedSystemFields = Object.keys(req.body).filter(field =>
+    const attemptedSystemFields = Object.keys(req.body).filter((field) =>
       systemManagedFields.includes(field)
     );
 
@@ -188,7 +186,7 @@ export const updateUser = async (
       return;
     }
 
-    const attemptedSpecialFields = Object.keys(req.body).filter(field =>
+    const attemptedSpecialFields = Object.keys(req.body).filter((field) =>
       specialHandlingFields.includes(field)
     );
 
@@ -203,7 +201,7 @@ export const updateUser = async (
       return;
     }
 
-    const attemptedAdminFields = Object.keys(req.body).filter(field =>
+    const attemptedAdminFields = Object.keys(req.body).filter((field) =>
       adminOnlyFields.includes(field)
     );
 
@@ -424,7 +422,7 @@ export const registerUser = async (
     }
 
     const extraFields = Object.keys(req.body).filter(
-      field => !["name", "email", "password", "role"].includes(field)
+      (field) => !["name", "email", "password", "role"].includes(field)
     );
 
     if (extraFields.length > 0) {
@@ -471,7 +469,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     const extraFields = Object.keys(req.body).filter(
-      field => !["email", "password"].includes(field)
+      (field) => !["email", "password"].includes(field)
     );
 
     if (extraFields.length > 0) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DocumentType, User, Document } from "../models/index.ts";
+import { DocumentType, Document } from "../models/index.ts";
 import mongoose from "mongoose";
 
 const handleError = (
@@ -63,7 +63,7 @@ export const createDocumentType = async (
     ];
 
     const invalidFields = Object.keys(req.body).filter(
-      field => !allowedFields.includes(field)
+      (field) => !allowedFields.includes(field)
     );
     if (invalidFields.length > 0) {
       res.status(400).json({
@@ -119,7 +119,7 @@ export const updateDocumentType = async (
     // * validate fields
     const schemaFields = Object.keys(DocumentType.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
-      field => !schemaFields.includes(field)
+      (field) => !schemaFields.includes(field)
     );
 
     if (invalidFields.length > 0) {

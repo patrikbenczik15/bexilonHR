@@ -16,7 +16,7 @@ export default function FAQ() {
       setExpanded(
         isExpanded
           ? [...expanded, panel]
-          : expanded.filter(item => item !== panel)
+          : expanded.filter((item) => item !== panel)
       );
     };
 

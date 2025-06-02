@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { User, DocumentRequestType, DocumentType } from "../models/index.ts";
+import { DocumentRequestType, DocumentType } from "../models/index.ts";
 
 const handleError = (
   res: Response,
@@ -68,7 +68,7 @@ export const createDocumentRequestType = async (
     const receivedFields = Object.keys(req.body);
 
     const invalidFields = receivedFields.filter(
-      field => !allowedFields.includes(field)
+      (field) => !allowedFields.includes(field)
     );
     if (invalidFields.length > 0) {
       res.status(400).json({
@@ -94,18 +94,18 @@ export const createDocumentRequestType = async (
     const requiredDocs = requiredDocuments as string[];
 
     const invalidFormatIds = requiredDocs.filter(
-      id => !mongoose.isValidObjectId(id)
+      (id) => !mongoose.isValidObjectId(id)
     );
 
-    const validIds = requiredDocs.filter(id => mongoose.isValidObjectId(id));
+    const validIds = requiredDocs.filter((id) => mongoose.isValidObjectId(id));
     const existingDocuments = await DocumentType.find({
       _id: { $in: validIds },
     })
       .select("_id")
       .lean();
 
-    const existingIds = existingDocuments.map(doc => doc._id.toString());
-    const missingIds = validIds.filter(id => !existingIds.includes(id));
+    const existingIds = existingDocuments.map((doc) => doc._id.toString());
+    const missingIds = validIds.filter((id) => !existingIds.includes(id));
 
     const allInvalidIds = [...invalidFormatIds, ...missingIds];
     if (allInvalidIds.length > 0) {
@@ -182,7 +182,7 @@ export const updateDocumentRequestType = async (
 
     const schemaFields = Object.keys(DocumentRequestType.schema.obj);
     const invalidFields = Object.keys(req.body).filter(
-      f => !schemaFields.includes(f)
+      (f) => !schemaFields.includes(f)
     );
     if (invalidFields.length > 0) {
       res

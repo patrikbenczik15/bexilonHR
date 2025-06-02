@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import type { ThemeOptions } from '@mui/material/styles';
-import { inputsCustomizations } from './customizations/inputs';
-import { dataDisplayCustomizations } from './customizations/DataDisplay';
-import { feedbackCustomizations } from './customizations/feedback';
-import { navigationCustomizations } from './customizations/navigation';
-import { surfacesCustomizations } from './customizations/surfaces';
-import { colorSchemes, typography, shadows, shape } from './themePrimitives';
-import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import * as React from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import type { ThemeOptions } from "@mui/material/styles";
+import { inputsCustomizations } from "./customizations/inputs";
+import { dataDisplayCustomizations } from "./customizations/DataDisplay";
+import { feedbackCustomizations } from "./customizations/feedback";
+import { navigationCustomizations } from "./customizations/navigation";
+import { surfacesCustomizations } from "./customizations/surfaces";
+import { colorSchemes, typography, shadows, shape } from "./themePrimitives";
+import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 interface AppThemeProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ interface AppThemeProps {
    * This is for the docs site. You can ignore it or remove it.
    */
   disableCustomTheme?: boolean;
-  themeComponents?: ThemeOptions['components'];
+  themeComponents?: ThemeOptions["components"];
 }
 
 export default function AppTheme(props: AppThemeProps) {
@@ -27,8 +27,8 @@ export default function AppTheme(props: AppThemeProps) {
       : createTheme({
           // For more details about CSS variables configuration, see https://mui.com/material-ui/customization/css-theme-variables/configuration/
           cssVariables: {
-            colorSchemeSelector: 'data-mui-color-scheme',
-            cssVarPrefix: 'template',
+            colorSchemeSelector: "data-mui-color-scheme",
+            cssVarPrefix: "template",
           },
           colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
           typography,

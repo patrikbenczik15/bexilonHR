@@ -1,5 +1,4 @@
 import NavBar from "../NavBar/NavBar";
-import Footer from "../Footer/Footer";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -127,7 +126,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
               width: "100%",
             }}
           >
-            {tiers.map(tier => (
+            {tiers.map((tier) => (
               <Grid
                 size={{
                   xs: 12,
@@ -145,7 +144,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
                       gap: 4,
                     },
                     tier.title === "Professional" &&
-                      (theme => ({
+                      ((theme) => ({
                         border: "none",
                         background:
                           "radial-gradient(circle at 50% 0%, hsl(220, 20%, 35%), hsl(220, 30%, 6%))",
@@ -209,7 +208,7 @@ export default function MarketingPage(props: { disableCustomTheme?: boolean }) {
                     <Divider
                       sx={{ my: 2, opacity: 0.8, borderColor: "divider" }}
                     />
-                    {tier.description.map(line => (
+                    {tier.description.map((line) => (
                       <Box
                         key={line}
                         sx={{

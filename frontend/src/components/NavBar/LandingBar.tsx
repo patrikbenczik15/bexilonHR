@@ -12,7 +12,6 @@ import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Sitemark from "../Landing/SitemarkIcon";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import Menu from "@mui/material/Menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";

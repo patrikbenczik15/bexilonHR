@@ -2,7 +2,6 @@ import AppTheme from "../../theme/AppTheme";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
-import NavBar from "../NavBar/NavBar";
 import { CssBaseline } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
@@ -23,7 +22,7 @@ export default function Hero() {
       <CssBaseline enableColorScheme />
       <Box
         id="hero"
-        sx={theme => ({
+        sx={(theme) => ({
           width: "100%",
           backgroundRepeat: "no-repeat",
 
@@ -63,7 +62,7 @@ export default function Hero() {
               <Typography
                 component="span"
                 variant="h1"
-                sx={theme => ({
+                sx={(theme) => ({
                   fontSize: "inherit",
                   color: "primary.main",
                   ...theme.applyStyles("dark", {
