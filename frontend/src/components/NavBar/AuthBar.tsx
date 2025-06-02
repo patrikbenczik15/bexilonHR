@@ -30,7 +30,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: "8px 12px",
 }));
 
-export default function AppAppBar() {
+export default function AuthBar() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -141,7 +141,7 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                {sections.map(id => (
+                {sections.map((id) => (
                   <MenuItem
                     key={id}
                     onClick={() => {

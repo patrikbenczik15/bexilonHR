@@ -34,11 +34,10 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: "8px 12px",
 }));
 
-export default function AppAppBar() {
+export default function LandingBar() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
