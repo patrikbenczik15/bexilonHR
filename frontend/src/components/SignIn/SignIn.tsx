@@ -1,4 +1,4 @@
-// TODO RESPONSIVE DESIGN
+// TODO NOT MOBILE FRIENDLY
 
 import NavBar from "../NavBar/NavBar";
 import SignInCard from "./SignInCard";

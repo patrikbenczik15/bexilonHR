@@ -12,7 +12,7 @@ import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Sitemark from "../Landing/SitemarkIcon";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -33,32 +33,10 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 export default function AuthBar() {
   const [open, setOpen] = React.useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
-
-  const handleSitemarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (location.pathname !== "/") {
-      navigate("/");
-    } else {
-      const hero = document.getElementById("hero");
-      if (hero) {
-        hero.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const sections = ["home"];
 
   return (
     <AppBar
@@ -74,27 +52,46 @@ export default function AuthBar() {
       <Container maxWidth="lg">
         <StyledToolbar variant="dense" disableGutters>
           <Box
-            sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              alignItems: "center",
+              px: 0,
+            }}
           >
-            <a
-              href={location.pathname === "/" ? "#hero" : "/"}
-              onClick={handleSitemarkClick}
-              style={{ display: "flex", alignItems: "center" }}
+            <Link
+              to="/"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
             >
               <Sitemark />
-            </a>
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            </Link>
+
+            <Box sx={{ display: { xs: "none", md: "flex" }, ml: 2 }}>
               <Button
                 component={Link}
                 to="/"
                 color="primary"
-                variant="text"
+                variant={location.pathname === "/" ? "contained" : "text"}
                 size="small"
               >
                 Home
               </Button>
+              <Button
+                component={Link}
+                to="/demo"
+                color="primary"
+                variant={location.pathname === "/demo" ? "contained" : "text"}
+                size="small"
+              >
+                Demo
+              </Button>
             </Box>
           </Box>
+
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -121,59 +118,81 @@ export default function AuthBar() {
               Sign up
             </Button>
           </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
+
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton aria-label="open menu" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>
-            <Drawer
-              anchor="top"
-              open={open}
-              onClose={toggleDrawer(false)}
-              PaperProps={{
-                sx: {
-                  top: "var(--template-frame-height, 0px)",
-                },
-              }}
-            >
-              <Box sx={{ p: 2, backgroundColor: "background.default" }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <IconButton onClick={toggleDrawer(false)}>
-                    <CloseRoundedIcon />
-                  </IconButton>
-                </Box>
-                {sections.map((id) => (
-                  <MenuItem
-                    key={id}
-                    onClick={() => {
-                      toggleDrawer(false)();
-                      if (location.pathname !== "/") {
-                        navigate("/", { state: { scrollToId: id } });
-                      } else {
-                        scrollTo(id);
-                      }
-                    }}
-                  >
-                    {id === "faq"
-                      ? "FAQ"
-                      : id.charAt(0).toUpperCase() + id.slice(1)}
-                  </MenuItem>
-                ))}
-                <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
-              </Box>
-            </Drawer>
           </Box>
         </StyledToolbar>
       </Container>
+
+      <Drawer
+        anchor="top"
+        open={open}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: {
+            top: "var(--template-frame-height, 0px)",
+          },
+        }}
+      >
+        <Box sx={{ p: 2, backgroundColor: "background.default" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton onClick={toggleDrawer(false)}>
+              <CloseRoundedIcon />
+            </IconButton>
+          </Box>
+
+          <MenuItem onClick={toggleDrawer(false)}>
+            <Button
+              component={Link}
+              to="/"
+              fullWidth
+              color="primary"
+              variant="text"
+            >
+              Home
+            </Button>
+          </MenuItem>
+          <MenuItem onClick={toggleDrawer(false)}>
+            <Button
+              component={Link}
+              to="/demo"
+              fullWidth
+              color="primary"
+              variant="text"
+            >
+              Demo
+            </Button>
+          </MenuItem>
+
+          <Divider sx={{ my: 2 }} />
+
+          <MenuItem onClick={toggleDrawer(false)}>
+            <Button
+              component={Link}
+              to="/signup"
+              fullWidth
+              color="primary"
+              variant="contained"
+            >
+              Sign up
+            </Button>
+          </MenuItem>
+          <MenuItem onClick={toggleDrawer(false)}>
+            <Button
+              component={Link}
+              to="/signin"
+              fullWidth
+              color="primary"
+              variant="outlined"
+            >
+              Sign in
+            </Button>
+          </MenuItem>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }

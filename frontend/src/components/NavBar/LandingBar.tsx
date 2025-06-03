@@ -35,30 +35,40 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 
 export default function LandingBar() {
-  const [open, setOpen] = React.useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/signin");
+  };
+  const isLoggedIn = () => !!localStorage.getItem("token");
+
+  const sections = ["features", "testimonials", "highlights", "pricing", "faq"];
+  const settings = ["Profile", "Account", "Dashboard", "Logout"];
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const handleSitemarkClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (location.pathname !== "/") {
@@ -71,20 +81,6 @@ export default function LandingBar() {
     }
   };
 
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-  const logout = () => {
-    localStorage.removeItem("token");
-    navigate("/signin");
-  };
-  const isLoggedIn = () => !!localStorage.getItem("token");
-
-  const sections = ["features", "testimonials", "highlights", "pricing", "faq"];
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
   return (
     <AppBar
       position="fixed"
@@ -104,11 +100,15 @@ export default function LandingBar() {
             <a
               href={location.pathname === "/" ? "#hero" : "/"}
               onClick={handleSitemarkClick}
-              style={{ display: "flex", alignItems: "center" }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
             >
               <Sitemark />
             </a>
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <Box sx={{ display: { xs: "none", md: "flex" }, ml: 2 }}>
               {sections.map((id) => (
                 <Button
                   key={id}
@@ -118,7 +118,11 @@ export default function LandingBar() {
                   size="small"
                   onClick={(e) => {
                     e.preventDefault();
-                    scrollTo(id);
+                    if (location.pathname !== "/") {
+                      navigate("/", { replace: true });
+                    } else {
+                      scrollTo(id);
+                    }
                   }}
                   sx={{ textTransform: "none" }}
                 >
@@ -129,6 +133,7 @@ export default function LandingBar() {
               ))}
             </Box>
           </Box>
+
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -190,71 +195,118 @@ export default function LandingBar() {
                         handleCloseUserMenu();
                         if (setting === "Logout") {
                           logout();
+                        } else if (setting === "Dashboard") {
+                          navigate("/dashboard");
+                        } else if (setting === "Profile") {
+                          navigate("/profile");
+                        } else if (setting === "Account") {
+                          navigate("/account");
                         }
                       }}
                     >
-                      <Typography sx={{ textAlign: "center" }}>
-                        {setting}
-                      </Typography>
+                      <Typography textAlign="center">{setting}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
               </Box>
             )}
           </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
-            <IconButton aria-label="Menu button" onClick={toggleDrawer(true)}>
+
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton aria-label="open menu" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>
-            <Drawer
-              anchor="top"
-              open={open}
-              onClose={toggleDrawer(false)}
-              PaperProps={{
-                sx: {
-                  top: "var(--template-frame-height, 0px)",
-                },
-              }}
-            >
-              <Box sx={{ p: 2, backgroundColor: "background.default" }}>
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <IconButton onClick={toggleDrawer(false)}>
-                    <CloseRoundedIcon />
-                  </IconButton>
-                </Box>
-                {sections.map((id) => (
-                  <MenuItem
-                    key={id}
-                    onClick={() => {
-                      toggleDrawer(false)();
-                      if (location.pathname !== "/") {
-                        navigate("/", { state: { scrollToId: id } });
-                      } else {
-                        scrollTo(id);
-                      }
-                    }}
-                  >
-                    {id === "faq"
-                      ? "FAQ"
-                      : id.charAt(0).toUpperCase() + id.slice(1)}
-                  </MenuItem>
-                ))}
-                <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
-              </Box>
-            </Drawer>
           </Box>
         </StyledToolbar>
       </Container>
+
+      <Drawer
+        anchor="top"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: {
+            top: "var(--template-frame-height, 0px)",
+          },
+        }}
+      >
+        <Box sx={{ p: 2, backgroundColor: "background.default" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton onClick={toggleDrawer(false)}>
+              <CloseRoundedIcon />
+            </IconButton>
+          </Box>
+
+          {sections.map((id) => (
+            <MenuItem
+              key={id}
+              onClick={() => {
+                toggleDrawer(false)();
+                if (location.pathname !== "/") {
+                  navigate("/", { replace: true });
+                } else {
+                  scrollTo(id);
+                }
+              }}
+            >
+              <Typography>
+                {id === "faq"
+                  ? "FAQ"
+                  : id.charAt(0).toUpperCase() + id.slice(1)}
+              </Typography>
+            </MenuItem>
+          ))}
+
+          <Divider sx={{ my: 3 }} />
+
+          {!isLoggedIn() ? (
+            <>
+              <MenuItem onClick={toggleDrawer(false)}>
+                <Button
+                  component={Link}
+                  to="/signup"
+                  fullWidth
+                  color="primary"
+                  variant="contained"
+                >
+                  Sign up
+                </Button>
+              </MenuItem>
+              <MenuItem onClick={toggleDrawer(false)}>
+                <Button
+                  component={Link}
+                  to="/signin"
+                  fullWidth
+                  color="primary"
+                  variant="outlined"
+                >
+                  Sign in
+                </Button>
+              </MenuItem>
+            </>
+          ) : (
+            settings.map((setting) => (
+              <MenuItem
+                key={setting}
+                onClick={() => {
+                  toggleDrawer(false)();
+                  if (setting === "Logout") {
+                    logout();
+                  } else if (setting === "Dashboard") {
+                    navigate("/dashboard");
+                  } else if (setting === "Profile") {
+                    navigate("/profile");
+                  } else if (setting === "Account") {
+                    navigate("/account");
+                  }
+                }}
+              >
+                <Typography textAlign="center">{setting}</Typography>
+              </MenuItem>
+            ))
+          )}
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }
