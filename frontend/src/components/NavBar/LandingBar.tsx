@@ -8,15 +8,16 @@ import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import MenuItem from "@mui/material/MenuItem";
+
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Sitemark from "../Landing/SitemarkIcon";
-import Menu from "@mui/material/Menu";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
+import { Menu } from "@mui/material";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -59,7 +60,14 @@ export default function LandingBar() {
   };
   const isLoggedIn = () => !!localStorage.getItem("token");
 
-  const sections = ["features", "testimonials", "highlights", "pricing", "faq"];
+  const sections = [
+    "features",
+    "testimonials",
+    "highlights",
+    "pricing",
+    "faq",
+    "demo",
+  ];
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
   const scrollTo = (id: string) => {
@@ -112,16 +120,20 @@ export default function LandingBar() {
               {sections.map((id) => (
                 <Button
                   key={id}
-                  href={`#${id}`}
+                  href={id === "demo" ? undefined : `#${id}`}
                   variant="text"
                   color="info"
                   size="small"
                   onClick={(e) => {
                     e.preventDefault();
-                    if (location.pathname !== "/") {
-                      navigate("/", { replace: true });
+                    if (id === "demo") {
+                      navigate("/demo");
                     } else {
-                      scrollTo(id);
+                      if (location.pathname !== "/") {
+                        navigate("/", { replace: true });
+                      } else {
+                        scrollTo(id);
+                      }
                     }
                   }}
                   sx={{ textTransform: "none" }}
@@ -242,10 +254,14 @@ export default function LandingBar() {
               key={id}
               onClick={() => {
                 toggleDrawer(false)();
-                if (location.pathname !== "/") {
-                  navigate("/", { replace: true });
+                if (id === "demo") {
+                  navigate("/demo");
                 } else {
-                  scrollTo(id);
+                  if (location.pathname !== "/") {
+                    navigate("/", { replace: true });
+                  } else {
+                    scrollTo(id);
+                  }
                 }
               }}
             >

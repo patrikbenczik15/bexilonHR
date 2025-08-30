@@ -149,7 +149,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         user
       );
 
-      console.log(response.data);
       navigate("/signin");
     } catch (error: any) {
       console.error(error.response?.data || error.message);
