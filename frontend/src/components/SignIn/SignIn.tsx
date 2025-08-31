@@ -4,7 +4,6 @@ import NavBar from "../NavBar/NavBar";
 import SignInCard from "./SignInCard";
 import SignInSideInfo from "./SignInSideInfo";
 import Stack from "@mui/material/Stack";
-import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../../theme/AppTheme";
 import Footer from "../Footer/Footer";
 import { styled } from "@mui/material/styles";
@@ -31,7 +30,6 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 export default function SignInSide(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
       <NavBar />
       <SignInContainer direction="column" justifyContent="space-between">
         <Stack

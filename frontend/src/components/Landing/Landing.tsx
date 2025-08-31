@@ -1,4 +1,3 @@
-import CssBaseline from "@mui/material/CssBaseline";
 import AppTheme from "../../theme/AppTheme";
 import NavBar from "../NavBar/NavBar";
 import Hero from "./Hero";
@@ -25,7 +24,6 @@ const isLoggedIn = () => !!localStorage.getItem("token");
 export default function Landing(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
       <NavBar />
 
       <Box component="main">

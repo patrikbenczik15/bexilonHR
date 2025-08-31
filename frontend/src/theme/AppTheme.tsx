@@ -6,8 +6,7 @@ import { dataDisplayCustomizations } from "./customizations/DataDisplay";
 import { feedbackCustomizations } from "./customizations/feedback";
 import { navigationCustomizations } from "./customizations/navigation";
 import { surfacesCustomizations } from "./customizations/surfaces";
-import { colorSchemes, typography, shadows, shape } from "./themePrimitives";
-import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
+import { palette, typography, shadows, shape } from "./themePrimitives";
 import CssBaseline from "@mui/material/CssBaseline";
 
 interface AppThemeProps {
@@ -25,12 +24,7 @@ export default function AppTheme(props: AppThemeProps) {
     return disableCustomTheme
       ? {}
       : createTheme({
-          // For more details about CSS variables configuration, see https://mui.com/material-ui/customization/css-theme-variables/configuration/
-          cssVariables: {
-            colorSchemeSelector: "data-mui-color-scheme",
-            cssVarPrefix: "template",
-          },
-          colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
+          palette,
           typography,
           shadows,
           shape,
@@ -44,9 +38,11 @@ export default function AppTheme(props: AppThemeProps) {
           },
         });
   }, [disableCustomTheme, themeComponents]);
+
   if (disableCustomTheme) {
     return <React.Fragment>{children}</React.Fragment>;
   }
+
   return (
     <ThemeProvider theme={theme} disableTransitionOnChange>
       <CssBaseline />

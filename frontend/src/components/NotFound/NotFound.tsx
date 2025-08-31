@@ -2,7 +2,7 @@ import AppTheme from "../../theme/AppTheme";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
-import { CssBaseline } from "@mui/material";
+
 import { styled } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { Typography, Link as MuiLink } from "@mui/material";
@@ -19,20 +19,14 @@ const StyledBox = styled("div")(({ theme }) => ({
 export default function Hero() {
   return (
     <AppTheme>
-      <CssBaseline enableColorScheme />
       <Box
         id="hero"
-        sx={(theme) => ({
+        sx={{
           width: "100%",
           backgroundRepeat: "no-repeat",
-
           backgroundImage:
-            "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 90%), transparent)",
-          ...theme.applyStyles("dark", {
-            backgroundImage:
-              "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)",
-          }),
-        })}
+            "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)",
+        }}
       >
         <Container
           sx={{
@@ -62,13 +56,10 @@ export default function Hero() {
               <Typography
                 component="span"
                 variant="h1"
-                sx={(theme) => ({
+                sx={{
                   fontSize: "inherit",
-                  color: "primary.main",
-                  ...theme.applyStyles("dark", {
-                    color: "primary.light",
-                  }),
-                })}
+                  color: "primary.light",
+                }}
               >
                 Not Found
               </Typography>

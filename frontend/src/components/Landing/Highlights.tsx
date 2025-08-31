@@ -55,7 +55,6 @@ const items = [
 export default function Highlights(props: { disableCustomTheme?: boolean }) {
   return (
     <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
       <Box
         id="highlights"
         sx={{
